@@ -107,14 +107,13 @@ std::istream &operator>>(std::istream &is, Comparative &type) {
 	return is;
 }
 
-template<typename T>
-string to_string(const string &varname, T arr, size_t n, bool show_empty, const vector<size_t> &max_num_len) {
+string to_string(const string &varname, const vector<int64_t>& arr, size_t n, bool show_empty, const vector<size_t> &max_num_len) {
 	const string VAR = varname + "_";
 	size_t MAX_LEN_OF_VAR = (to_string(n) + VAR).size();
 	string r;
 	bool exits_before = false;
 
-	auto generate_empty = [MAX_LEN_OF_VAR, show_empty, max_num_len](int colum_index) -> string {
+	auto generate_empty = [MAX_LEN_OF_VAR, show_empty, max_num_len](size_t colum_index) -> string {
 		if (!show_empty) return "";
 		string r;
 		int operator_size = 3;
@@ -173,11 +172,11 @@ vector<size_t> max2DVec(const vector<vector<int64_t>> &v) {
 	return m;
 }
 
-void print(const string &varname, size_t number_of_x, TypeOfOptimization type_of_optimization, int64_t *z,
-           size_t number_of_line, const vector<vector<int64_t>> &table, vector<Comparative> as, int64_t *b,
+void print(const string &varname, size_t number_of_x, TypeOfOptimization type_of_optimization, const vector<int64_t>& z,
+           size_t number_of_line, const vector<vector<int64_t>> &table, vector<Comparative> as, const vector<int64_t>&b,
            vector<Sign> signs) {
 	cout << magenta(to_string(type_of_optimization)) << " "
-	     << red(to_string(varname, z, number_of_x, false, vector(number_of_x, 0UL))) << endl;
+	     << red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0))) << endl;
 
 	for (int i = 0; i < number_of_line; ++i)
 		cout << yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
@@ -274,7 +273,7 @@ int main() {
 	cout << white("Pleases enter min or max: ") << red("(min enter 0 and max 1)") << flush;
 	cin >> type_of_optimization;
 
-	int64_t z[number_of_x];
+	vector<int64_t> z(number_of_x);
 	cout << white("Pleases enter Z: ") << red("(for input 2x_1 + 3 x_3 and you have 4 var enter 2 0 3 0)") << flush;
 	for (auto &x: z)
 		cin >> x;
@@ -284,7 +283,7 @@ int main() {
 	cin >> number_of_line;
 
 	vector<vector<int64_t>> table(number_of_line);
-	int64_t b[number_of_line];
+    vector<int64_t> b(number_of_line);
 	vector<Comparative> comparatives(number_of_line);
 	cout << white("Please enter line:\n")
 	     << red("For example:\n")
