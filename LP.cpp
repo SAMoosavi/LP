@@ -154,26 +154,26 @@ void LP::set_type_of_optimization(LP::TypeOfOptimization type) {
 }
 
 void LP::set_z(const LP::ZType &other_z) {
-	validate_z();
 	z = other_z;
+	validate_z();
 }
 
 void LP::set_table(const LP::TableType &t) {
-	validate_table();
 	table = t;
+	validate_table();
 }
 
 void LP::set_b(const LP::RHSesType &rhs) {
-	validate_b();
 	b = rhs;
+	validate_b();
 }
 
 void LP::set_comparatives(const LP::ComparativesType &c) {
-	validate_comparatives();
 	comparatives = c;
+	validate_comparatives();
 }
 
 void LP::set_signs(const LP::SignsType &s) {
-	validate_signs();
 	signs = s;
+	validate_signs();
 }

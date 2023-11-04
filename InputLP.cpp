@@ -35,7 +35,7 @@ istream &operator>>(istream &is, LP::Comparative &type) {
 	else if (a == ">=")
 		type = LP::Comparative::greater;
 	else
-		throw runtime_error("InputLP::Comparative is not a valid" + a);
+		throw runtime_error("InputLP::Comparative is not a valid " + a);
 
 	return is;
 }
