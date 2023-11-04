@@ -13,7 +13,6 @@ public:
 	LP input();
 
 private:
-
 	void input_number_of_x();
 
 	void input_number_of_line();

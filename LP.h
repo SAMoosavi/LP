@@ -5,6 +5,7 @@
 
 using namespace std;
 
+/// Save linear programing information
 class LP {
 public:
 	enum TypeOfOptimization {
@@ -65,10 +66,19 @@ public:
 	static string to_string(Comparative c) noexcept;
 
 private:
+	/// Check size of @c table is @c number_of_line * @c number_of_x
 	void validate_table() const;
+
+	/// Check size of @c b is @c number_of_line
 	void validate_b() const;
+
+	/// Check size of @c comparatives is @c number_of_line
 	void validate_comparatives() const;
+
+	/// Check size of @c signs is @c number_of_x
 	void validate_signs() const;
+
+	/// Check size of @c z is @c number_of_x
 	void validate_z() const;
 
 	size_t number_of_x;
