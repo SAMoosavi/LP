@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include "InputLP.h"
+#include "ColoredString.h"
 
 using namespace std;
 
@@ -74,12 +75,14 @@ void print(const string &varname, size_t number_of_x, InputLP::TypeOfOptimizatio
            size_t number_of_line, const vector<vector<int64_t>> &table, vector<InputLP::InputLP::Comparative> as,
            const vector<int64_t> &b,
            vector<InputLP::InputLP::Sign> signs) {
-	cout << magenta(InputLP::to_string(type_of_optimization)) << " "
-	     << red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0))) << endl;
+	cout << ColoredString::magenta(InputLP::to_string(type_of_optimization)) << " "
+	     << ColoredString::red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0)))
+		 << endl;
 
 	for (int i = 0; i < number_of_line; ++i)
-		cout << yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
-		     << green(InputLP::to_string(as[i])) << " " << yellow(to_string(b[i])) << endl;
+		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
+		     << ColoredString::green(InputLP::to_string(as[i])) << " " << ColoredString::yellow(to_string(b[i]))
+		     << endl;
 
 	map<InputLP::Sign, vector<size_t>> sign;
 	for (size_t i = 0; i < number_of_x; i++)
@@ -93,7 +96,7 @@ void print(const string &varname, size_t number_of_x, InputLP::TypeOfOptimizatio
 		for (const auto &s2: s1.second)
 			s += VAR + to_string(s2 + 1) + ", ";
 		s = s.substr(0, s.size() - 2);
-		cout << magenta(s) << " " << magenta(InputLP::to_string(s1.first)) << endl;
+		cout << ColoredString::magenta(s) << " " << ColoredString::magenta(InputLP::to_string(s1.first)) << endl;
 	}
 }
 
@@ -168,11 +171,11 @@ InputLP::TypeOfOptimization change(InputLP::TypeOfOptimization t) {
 int main() {
 	auto input = InputLP();
 
-	cout << endl << blue("Prime:") << endl;
+	cout << endl << ColoredString::blue("Prime:") << endl;
 	print("x", input.get_number_of_x(), input.get_type_of_optimization(), input.get_z(), input.get_number_of_line(),
 	      input.get_table(), input.get_comparatives(), input.get_b(), input.get_signs());
 
-	cout << endl << blue("Dual:") << endl;
+	cout << endl << ColoredString::blue("Dual:") << endl;
 	print("y", input.get_number_of_line(), change(input.get_type_of_optimization()), input.get_b(),
 	      input.get_number_of_x(), T(input.get_table()),
 	      SignToComparative(input.get_signs(), input.get_number_of_x(), input.get_type_of_optimization()),

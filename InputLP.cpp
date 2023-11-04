@@ -1,18 +1,5 @@
 #include "InputLP.h"
-
-
-string red(const string &s) { return "\033[1;31m" + s + "\033[0m"; }
-
-string green(const string &s) { return "\033[1;32m" + s + "\033[0m"; }
-
-string yellow(const string &s) { return "\033[1;33m" + s + "\033[0m"; }
-
-string blue(const string &s) { return "\033[1;34m" + s + "\033[0m"; }
-
-string magenta(const string &s) { return "\033[1;35m" + s + "\033[0m"; }
-
-string white(const string &s) { return "\033[1;37m" + s + "\033[0m"; }
-
+#include "ColoredString.h"
 
 istream &operator>>(istream &is, InputLP::TypeOfOptimization &type) {
 	int a;
@@ -105,38 +92,55 @@ void InputLP::input() {
 }
 
 void InputLP::input_number_of_x() {
-	cout << white("Pleases enter number of variables:") << flush;
+	cout << ColoredString::white("Pleases enter number of variables:") << flush;
 	cin >> number_of_x;
 }
 
 void InputLP::input_type_of_optimization() {
-	cout << white("Pleases enter min or max: ") << red("(min enter 0 and max 1)") << flush;
+	cout << ColoredString::white("Pleases enter min or max: ")
+		 << ColoredString::red("(min enter 0 and max 1)")
+		 << flush;
 	cin >> type_of_optimization;
 }
 
 void InputLP::input_number_of_line() {
-	cout << white("Please enter the number of line:") << flush;
+	cout << ColoredString::white("Please enter the number of line:") << flush;
 	cin >> number_of_line;
 }
 
 void InputLP::input_z() {
-	cout << white("Pleases enter Z: ") << red("(for input 2x_1 + 3 x_3 and you have 4 var enter 2 0 3 0)") << flush;
+	cout << ColoredString::white("Pleases enter Z: ")
+	     << ColoredString::red("(for input 2x_1 + 3 x_3 and you have 4 var enter 2 0 3 0)")
+		 << flush;
 	z.resize(number_of_x);
 	for (auto &x: z)
 		cin >> x;
 }
 
 void InputLP::input_lines() {
-	cout << white("Please enter line:\n")
-	     << red("For example:\n")
-	     << yellow("x_1 + x_2        + x_4 ") << green(" = ") << yellow("1\n")
-	     << yellow("x_1       - 3x_3       ") << green(">= ") << yellow("4\n")
-	     << yellow("      x_2        + x_4 ") << green("<= ") << yellow("2\n")
-	     << red("you must enter this:\n")
-	     << yellow("1 1  0 1 ") << green(" = ") << yellow("1\n")
-	     << yellow("1 0 -1 0 ") << green(">= ") << yellow("4\n")
-	     << yellow("0 1  0 1 ") << green("<= ") << yellow("2\n")
-	     << flush;
+	cout << ColoredString::white("Please enter line:\n")
+	     << ColoredString::red("For example:\n")
+	     << ColoredString::yellow("x_1 + x_2        + x_4 ")
+		 << ColoredString::green(" = ")
+	     << ColoredString::yellow("1\n")
+	     << ColoredString::yellow("x_1       - 3x_3       ")
+		 << ColoredString::green(">= ")
+	     << ColoredString::yellow("4\n")
+	     << ColoredString::yellow("      x_2        + x_4 ")
+		 << ColoredString::green("<= ")
+	     << ColoredString::yellow("2\n")
+	     << ColoredString::red("you must enter this:\n")
+	     << ColoredString::yellow("1 1  0 1 ")
+		 << ColoredString::green(" = ")
+		 << ColoredString::yellow("1\n")
+	     << ColoredString::yellow("1 0 -1 0 ")
+		 << ColoredString::green(">= ")
+		 << ColoredString::yellow("4\n")
+	     << ColoredString::yellow("0 1  0 1 ")
+		 << ColoredString::green("<= ")
+		 << ColoredString::yellow("2\n")
+		 << flush;
+
 	table.resize(number_of_line);
 	b.resize(number_of_line);
 	comparatives.resize(number_of_line);
@@ -153,7 +157,9 @@ void InputLP::input_line(size_t row_number) {
 }
 
 void InputLP::input_signs() {
-	cout << white("Please enter sign of x: ") << red("(0 is free, -1 is mean negative, 1 is positive)") << flush;
+	cout << ColoredString::white("Please enter sign of x: ")
+	     << ColoredString::red("(0 is free, -1 is mean negative, 1 is positive)")
+		 << flush;
 	signs.resize(number_of_x);
 	for (auto &sign: signs)
 		cin >> sign;

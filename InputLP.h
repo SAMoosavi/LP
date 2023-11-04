@@ -5,20 +5,6 @@
 
 using namespace std;
 
-
-string red(const string &s);
-
-string green(const string &s);
-
-string yellow(const string &s);
-
-string blue(const string &s);
-
-string magenta(const string &s);
-
-string white(const string &s);
-
-
 class InputLP {
 public:
 	InputLP();
