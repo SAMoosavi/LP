@@ -29,6 +29,8 @@ public:
 	typedef vector<Comparative> ComparativesType;
 	typedef vector<Sign> SignsType;
 
+	LP();
+
 	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
 	   TableType table, RHSesType b, ComparativesType comparatives, SignsType signs);
 

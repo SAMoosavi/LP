@@ -43,6 +43,16 @@ string LP::to_string(LP::Comparative c) noexcept {
 	}
 }
 
+LP::LP()
+:number_of_x(0)
+,number_of_line(0)
+,type_of_optimization(TypeOfOptimization::max)
+,z()
+,table()
+,b()
+,comparatives()
+,signs() {}
+
 LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
        TableType table, RHSesType b, ComparativesType comparatives, SignsType signs)
 :number_of_x(number_of_x)
