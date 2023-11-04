@@ -71,15 +71,16 @@ vector<size_t> max2DVec(const LP::TableType &v) {
 }
 
 void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization, const LP::ZType &z,
-           size_t number_of_line, const LP::TableType &table, LP::ComparativesType as, const LP::RHSesType &b,
-           LP::SignsType signs) {
+           size_t number_of_line, const LP::TableType &table, LP::ComparativesType comparatives,
+           const LP::RHSesType &rhSes, LP::SignsType signs) {
 	cout << ColoredString::magenta(LP::to_string(type_of_optimization)) << " "
 	     << ColoredString::red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0)))
 	     << endl;
 
 	for (int i = 0; i < number_of_line; ++i)
 		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
-		     << ColoredString::green(LP::to_string(as[i])) << " " << ColoredString::yellow(to_string(b[i]))
+		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
+		     << ColoredString::yellow(to_string(rhSes[i]))
 		     << endl;
 
 	map<LP::Sign, vector<size_t>> sign;
@@ -88,12 +89,12 @@ void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization typ
 
 	const string VAR = varname + "_";
 
-	string s;
 	for (const auto &s1: sign) {
-		s = "";
+		string s;
 		for (const auto &s2: s1.second)
 			s += VAR + to_string(s2 + 1) + ", ";
-		s = s.substr(0, s.size() - 2);
+		s.pop_back();
+		s.pop_back();
 		cout << ColoredString::magenta(s) << " " << ColoredString::magenta(LP::to_string(s1.first)) << endl;
 	}
 }
@@ -156,7 +157,7 @@ SignToComparative(const LP::SignsType &r, size_t num, LP::TypeOfOptimization typ
 	return comparatives;
 }
 
-LP::TypeOfOptimization change(LP::TypeOfOptimization t) {
+LP::TypeOfOptimization change_type_of_optimization(LP::TypeOfOptimization t) {
 	switch (t) {
 		case LP::TypeOfOptimization::min:
 			return LP::TypeOfOptimization::max;
@@ -171,14 +172,13 @@ int main() {
 	LP lp = input.input();
 
 	cout << endl << ColoredString::blue("Prime:") << endl;
-	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-	      lp.get_table(), lp.get_comparatives(), lp.get_b(), lp.get_signs());
+	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(), lp.get_table(),
+	      lp.get_comparatives(), lp.get_b(), lp.get_signs());
 
 	cout << endl << ColoredString::blue("Dual:") << endl;
-	print("y", lp.get_number_of_line(), change(lp.get_type_of_optimization()), lp.get_b(),
+	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_b(),
 	      lp.get_number_of_x(), T(lp.get_table()),
-	      SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()),
-	      lp.get_z(),
+	      SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()), lp.get_z(),
 	      ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization()));
 
 }
