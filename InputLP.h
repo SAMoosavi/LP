@@ -2,54 +2,18 @@
 #define LP_INPUTLP_H
 
 #include <bits/stdc++.h>
+#include "LP.h"
 
 using namespace std;
 
 class InputLP {
 public:
-	InputLP();
+	InputLP() = default;
 
-	enum TypeOfOptimization {
-		min = 0, max = 1
-	};
-
-	static string to_string(TypeOfOptimization type) noexcept;
-
-	enum Sign {
-		negative = -1,
-		freeSign = 0,
-		positive = 1
-	};
-
-	static string to_string(Sign s) noexcept;
-
-	enum Comparative {
-		lower = -1,
-		equal = 0,
-		greater = 1
-	};
-
-	static string to_string(Comparative c) noexcept;
-
-	void input();
-
-	size_t get_number_of_x() const noexcept;
-
-	size_t get_number_of_line() const noexcept;
-
-	TypeOfOptimization get_type_of_optimization() const noexcept;
-
-	vector<int64_t> get_z() const noexcept;
-
-	vector<vector<int64_t>> get_table() const noexcept;
-
-	vector<int64_t> get_b() const noexcept;
-
-	vector<Comparative> get_comparatives() const noexcept;
-
-	vector<Sign> get_signs() const noexcept;
+	LP input();
 
 private:
+
 	void input_number_of_x();
 
 	void input_number_of_line();
@@ -60,19 +24,11 @@ private:
 
 	void input_lines();
 
-	void input_line(size_t row_number);
+	void input_line(size_t row_number, LP::TableType &table, LP::ComparativesType &comparatives, LP::RHSesType &b);
 
 	void input_signs();
 
-	size_t number_of_x;
-	size_t number_of_line;
-	TypeOfOptimization type_of_optimization;
-	vector<int64_t> z{};
-	vector<vector<int64_t>> table;
-	vector<int64_t> b;
-	vector<Comparative> comparatives;
-	vector<Sign> signs;
-
+	LP lp{};
 };
 
 #endif
