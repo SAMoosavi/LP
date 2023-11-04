@@ -38,7 +38,7 @@ public:
 	void set_number_of_line(size_t num);
 	size_t get_number_of_line() const noexcept;
 
-	void get_type_of_optimization(TypeOfOptimization type);
+	void set_type_of_optimization(TypeOfOptimization type);
 	TypeOfOptimization get_type_of_optimization() const noexcept;
 
 	void set_z(const ZType& other_z);

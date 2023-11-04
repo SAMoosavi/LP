@@ -139,7 +139,7 @@ void LP::set_number_of_line(size_t num) {
 	comparatives.resize(num);
 }
 
-void LP::get_type_of_optimization(LP::TypeOfOptimization type) {
+void LP::set_type_of_optimization(LP::TypeOfOptimization type) {
 	type_of_optimization = type;
 }
 
