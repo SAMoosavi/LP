@@ -105,12 +105,25 @@ auto LP::get_z() const noexcept -> ZType {
 	return z;
 }
 
+LP::Coefficient LP::z_at(size_t index) const noexcept {
+	return z[index];
+}
+
 auto LP::get_table() const noexcept -> TableType {
 	return table;
 }
 
+LP::CellOfTable LP::table_at(size_t number_of_row, size_t number_of_column) const noexcept {
+	return table[number_of_row][number_of_column];
+}
+
+
 auto LP::get_b() const noexcept -> RHSesType {
 	return b;
+}
+
+LP::Coefficient LP::b_at(size_t index) const noexcept {
+	return b[index];
 }
 
 auto LP::get_comparatives() const noexcept -> ComparativesType {
@@ -119,6 +132,10 @@ auto LP::get_comparatives() const noexcept -> ComparativesType {
 
 auto LP::get_signs() const noexcept -> SignsType {
 	return signs;
+}
+
+LP::Sign LP::sign_at(size_t index) const noexcept {
+	return signs[index];
 }
 
 void LP::set_number_of_x(size_t num) {

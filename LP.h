@@ -24,9 +24,12 @@ public:
 		greater = 1
 	};
 
-	typedef vector<int64_t> ZType;
-	typedef vector<int64_t> RHSesType;
-	typedef vector<vector<int64_t>> TableType;
+	typedef int64_t Coefficient;
+	typedef vector<Coefficient> ZType;
+	typedef vector<Coefficient> RHSesType;
+	typedef Coefficient CellOfTable;
+	typedef vector<CellOfTable> RowOfTable;
+	typedef vector<RowOfTable> TableType;
 	typedef vector<Comparative> ComparativesType;
 	typedef vector<Sign> SignsType;
 
@@ -46,18 +49,22 @@ public:
 
 	void set_z(const ZType & other_z);
 	ZType get_z() const noexcept;
+	Coefficient z_at(size_t index) const noexcept;
 
 	void set_table(const TableType & t);
 	TableType get_table() const noexcept;
+	CellOfTable table_at(size_t number_of_row, size_t number_of_column) const noexcept;
 
 	void set_b(const RHSesType & rhs);
 	RHSesType get_b() const noexcept;
+	Coefficient b_at(size_t index) const noexcept;
 
 	void set_comparatives(const ComparativesType & c);
 	ComparativesType get_comparatives() const noexcept;
 
 	void set_signs(const SignsType & s);
 	SignsType get_signs() const noexcept;
+	Sign sign_at(size_t index) const noexcept;
 
 	static string to_string(TypeOfOptimization type) noexcept;
 
