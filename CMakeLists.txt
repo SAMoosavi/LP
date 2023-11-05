@@ -4,9 +4,9 @@ project(LP)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(Dual Dual.cpp
-        InputLP.cpp
-        InputLP.h
-        ColoredString.cpp
-        ColoredString.h
-        LP.cpp
-        LP.h)
+		InputLP.cpp
+		InputLP.h
+		ColoredString.cpp
+		ColoredString.h
+		LP.cpp
+		LP.h)

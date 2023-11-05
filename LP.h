@@ -33,7 +33,7 @@ public:
 	LP();
 
 	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
-	   TableType table, RHSesType b, ComparativesType comparatives, SignsType signs);
+		TableType table, RHSesType b, ComparativesType comparatives, SignsType signs);
 
 	void set_number_of_x(size_t num);
 	size_t get_number_of_x() const noexcept;
@@ -44,19 +44,19 @@ public:
 	void set_type_of_optimization(TypeOfOptimization type);
 	TypeOfOptimization get_type_of_optimization() const noexcept;
 
-	void set_z(const ZType& other_z);
+	void set_z(const ZType & other_z);
 	ZType get_z() const noexcept;
 
-	void set_table(const TableType& t);
+	void set_table(const TableType & t);
 	TableType get_table() const noexcept;
 
-	void set_b(const RHSesType& rhs);
+	void set_b(const RHSesType & rhs);
 	RHSesType get_b() const noexcept;
 
-	void set_comparatives(const ComparativesType& c);
+	void set_comparatives(const ComparativesType & c);
 	ComparativesType get_comparatives() const noexcept;
 
-	void set_signs(const SignsType& s);
+	void set_signs(const SignsType & s);
 	SignsType get_signs() const noexcept;
 
 	static string to_string(TypeOfOptimization type) noexcept;
