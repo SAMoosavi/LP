@@ -10,3 +10,11 @@ add_executable(Dual Dual.cpp
 		ColoredString.h
 		LP.cpp
 		LP.h)
+
+add_executable(Simplex Simplex.cpp
+		InputLP.cpp
+		InputLP.h
+		ColoredString.cpp
+		ColoredString.h
+		LP.cpp
+		LP.h)
