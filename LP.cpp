@@ -130,6 +130,10 @@ auto LP::get_comparatives() const noexcept -> ComparativesType {
 	return comparatives;
 }
 
+LP::Comparative LP::comparative_at(size_t index) const noexcept {
+	return comparatives[index];
+}
+
 auto LP::get_signs() const noexcept -> SignsType {
 	return signs;
 }
