@@ -185,10 +185,10 @@ int main() {
 
 	cout << endl << ColoredString::blue("Prime:") << endl;
 	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(), lp.get_table(),
-		lp.get_comparatives(), lp.get_b(), lp.get_signs());
+		lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
 
 	cout << endl << ColoredString::blue("Dual:") << endl;
-	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_b(),
+	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_rhs(),
 		lp.get_number_of_x(), T(lp.get_table()),
 		SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()), lp.get_z(),
 		ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization()));

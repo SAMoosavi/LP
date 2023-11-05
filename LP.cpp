@@ -118,11 +118,11 @@ LP::CellOfTable LP::table_at(size_t number_of_row, size_t number_of_column) cons
 }
 
 
-auto LP::get_b() const noexcept -> RHSesType {
+auto LP::get_rhs() const noexcept -> RHSesType {
 	return b;
 }
 
-LP::Coefficient LP::b_at(size_t index) const noexcept {
+LP::Coefficient LP::rhs_at(size_t index) const noexcept {
 	return b[index];
 }
 
@@ -169,7 +169,7 @@ void LP::set_table(const LP::TableType & t) {
 	validate_table();
 }
 
-void LP::set_b(const LP::RHSesType & rhs) {
+void LP::set_rhs(const LP::RHSesType & rhs) {
 	b = rhs;
 	validate_b();
 }

@@ -113,7 +113,7 @@ void InputLP::input_lines() {
 	for(int row_number = 0; row_number < lp.get_number_of_line(); ++row_number)
 		input_line(row_number, table, comparatives, b);
 	lp.set_table(table);
-	lp.set_b(b);
+	lp.set_rhs(b);
 	lp.set_comparatives(comparatives);
 }
 

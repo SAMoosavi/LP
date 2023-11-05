@@ -55,9 +55,9 @@ public:
 	TableType get_table() const noexcept;
 	CellOfTable table_at(size_t number_of_row, size_t number_of_column) const noexcept;
 
-	void set_b(const RHSesType & rhs);
-	RHSesType get_b() const noexcept;
-	Coefficient b_at(size_t index) const noexcept;
+	void set_rhs(const RHSesType & rhs);
+	RHSesType get_rhs() const noexcept;
+	Coefficient rhs_at(size_t index) const noexcept;
 
 	void set_comparatives(const ComparativesType & c);
 	ComparativesType get_comparatives() const noexcept;
