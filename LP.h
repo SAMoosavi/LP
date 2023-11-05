@@ -61,6 +61,7 @@ public:
 
 	void set_comparatives(const ComparativesType & c);
 	ComparativesType get_comparatives() const noexcept;
+	Comparative comparative_at(size_t index) const noexcept;
 
 	void set_signs(const SignsType & s);
 	SignsType get_signs() const noexcept;

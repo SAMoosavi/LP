@@ -150,7 +150,7 @@ void LP::set_number_of_line(size_t num) {
 	number_of_line = num;
 	table.resize(num);
 	for(auto & t: table)
-		t.resize(num);
+		t.resize(number_of_x);
 	b.resize(num);
 	comparatives.resize(num);
 }
