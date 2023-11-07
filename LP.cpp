@@ -32,6 +32,10 @@ string LP::to_string(LP::Comparative c) noexcept {
 	}
 }
 
+string LP::to_string(LP::M m) noexcept {
+	return m;
+}
+
 LP::LP()
 : number_of_x(0)
 , number_of_line(0)
@@ -186,4 +190,122 @@ void LP::set_comparatives(const LP::ComparativesType &c) {
 void LP::set_signs(const LP::SignsType &s) {
 	signs = s;
 	validate_signs();
+}
+
+
+LP::M::M()
+: inf(0)
+, num(0) {}
+
+LP::M::M(double num)
+: inf(0)
+, num(num) {}
+
+LP::M::M(double inf, double num)
+: inf(inf)
+, num(num) {}
+
+
+LP::M::M(const LP::M &other)
+: inf(other.inf)
+, num(other.num) {}
+
+LP::M::M(LP::M &&other)
+: inf(std::move(other.inf))
+, num(std::move(other.num)) {}
+
+LP::M &LP::M::operator=(const double &other) {
+	inf = 0;
+	num = other;
+	return *this;
+}
+
+LP::M &LP::M::operator=(const LP::M &other) {
+	inf = other.inf;
+	num = other.num;
+	return *this;
+}
+
+LP::M &LP::M::operator=(LP::M &&other) {
+	inf = std::move(other.inf);
+	num = std::move(other.num);
+	return *this;
+}
+
+LP::M LP::M::operator+(const LP::M &obj) const noexcept {
+	return M(inf + obj.inf, num + obj.num);
+}
+
+LP::M LP::M::operator+(const double &obj) const noexcept {
+	return *this + M(obj);
+}
+
+LP::M LP::M::operator-() const noexcept {
+	return M(-inf, -num);
+}
+
+LP::M LP::M::operator-(const LP::M &obj) const noexcept {
+	return *this + (-obj);
+}
+
+LP::M LP::M::operator-(const double &obj) const noexcept {
+	return *this - M(obj);;
+}
+
+bool LP::M::operator==(const LP::M &other) const noexcept {
+	return (num == other.num) && (inf == other.inf);
+}
+
+bool LP::M::operator==(const double &other) const noexcept {
+	return (num == other) && (inf == 0);
+}
+
+bool LP::M::operator>(const LP::M &other) const noexcept {
+	return (inf > other.inf) || ((inf == other.inf) && (num > other.inf));
+}
+
+bool LP::M::operator>(const double &other) const noexcept {
+	return *this > M(other);
+}
+
+bool LP::M::operator>=(const LP::M &other) const noexcept {
+	return (*this > other) || (*this == other);
+}
+
+bool LP::M::operator>=(const double &other) const noexcept {
+	return *this >= M(other);
+}
+
+bool LP::M::operator<(const LP::M &other) const noexcept {
+	return !(*this >= other);
+}
+
+bool LP::M::operator<(const double &other) const noexcept {
+	return *this < M(other);
+}
+
+bool LP::M::operator<=(const LP::M &other) const noexcept {
+	return !(*this > other);
+}
+
+bool LP::M::operator<=(const double &other) const noexcept {
+	return *this <= M(other);
+}
+
+LP::M::operator string() const noexcept {
+	string s;
+	if(inf != 0)
+		s += std::to_string(-inf) + "M";
+	if(inf != 0 && num != 0)
+		s += " ";
+	if(num != 0)
+		s += std::to_string(num);
+	if(inf != 0 && num != 0)
+		s = "(" + s + ")";
+
+	return s;
+}
+
+LP::M LP::M::operator*(const double &obj) const noexcept {
+	return M(inf * obj,num * obj);
 }

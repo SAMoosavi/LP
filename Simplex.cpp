@@ -8,7 +8,8 @@
 using namespace std;
 
 /// This changes polynomial to string.
-string to_string(const string &varname, const vector<int64_t> &arr, size_t n, bool show_empty,
+template<typename T>
+string to_string(const string &varname, const vector<T> &arr, size_t n, bool show_empty,
 	const vector<size_t> &max_num_len) {
 	const string VAR = varname + "_";
 	size_t MAX_LEN_OF_VAR = (to_string(n) + VAR).size();
@@ -41,7 +42,7 @@ string to_string(const string &varname, const vector<int64_t> &arr, size_t n, bo
 		if(arr[i] == 0)
 			r += generate_empty(i);
 		else {
-			int64_t num;
+			T num;
 			if(arr[i] > 0) {
 				if(exits_before)
 					r += " + ";
@@ -52,7 +53,7 @@ string to_string(const string &varname, const vector<int64_t> &arr, size_t n, bo
 				r += " - ";
 				num = -arr[i];
 			}
-			string num_str = to_string(num);
+			string num_str = LP::to_string(num);
 			if(i != 0)
 				r += generate_space(num_str, max_num_len[i]);
 			r += num_str;
@@ -71,7 +72,7 @@ vector<size_t> max2DVec(const LP::TableType &v) {
 	vector<size_t> m(v[0].size(), 0);
 	for(const auto &b: v) {
 		for(size_t i = 0; i < b.size(); ++i) {
-			auto s = to_string(b[i]).size();
+			auto s = LP::to_string(b[i]).size();
 			if(b[i] < 0)
 				s--;
 			if(s > m[i])
@@ -90,11 +91,11 @@ void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization typ
 	     << ColoredString::red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0)))
 	     << endl;
 
-	// S.T.
+	// S.Transpose.
 	for(int i = 0; i < number_of_line; ++i)
 		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
 		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
-		     << ColoredString::yellow(to_string(rhSes[i]))
+		     << ColoredString::yellow(LP::to_string(rhSes[i]))
 		     << endl;
 
 	// Signs of variables
@@ -116,10 +117,11 @@ void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization typ
 
 
 Simplex::Simplex(LP last_lp) {
-	creat_std_lp(last_lp);
-	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(), lp.get_table(),
-		lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+	print("x", last_lp.get_number_of_x(), last_lp.get_type_of_optimization(), last_lp.get_z(),
+		last_lp.get_number_of_line(), last_lp.get_table(), last_lp.get_comparatives(), last_lp.get_rhs(),
+		last_lp.get_signs());
 
+	creat_std_lp(last_lp);
 
 	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
 		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
@@ -134,8 +136,9 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 	for(auto &comparative: last_lp.get_comparatives())
 		number_of_s += (comparative != LP::Comparative::equal);
 
-	size_t number_of_x = last_lp.get_number_of_x() + number_of_free_var + number_of_s;
-	lp.set_number_of_x(number_of_x);
+	number_of_x = last_lp.get_number_of_x() + number_of_free_var;
+	size_t number_of_x_prime = number_of_x + number_of_s;
+	lp.set_number_of_x(number_of_x_prime);
 	lp.set_number_of_line(last_lp.get_number_of_line());
 
 	/// Creat @c LP::z,@c LP::table and creat  @c transformers
@@ -169,9 +172,9 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 				int sign = last_lp.sign_at(index_of_x_in_last_lp) == LP::negative? -1: 1;
 				for(size_t index_of_row = 0; index_of_row < last_lp.get_number_of_line(); ++index_of_row)
 					table[index_of_row][index_of_x_in_new_lp] =
-						sign * last_lp.table_at(index_of_row, index_of_x_in_last_lp);
+						last_lp.table_at(index_of_row, index_of_x_in_last_lp) * sign;
 
-				z[index_of_x_in_new_lp] = sign * last_lp.z_at(index_of_x_in_last_lp);
+				z[index_of_x_in_new_lp] = last_lp.z_at(index_of_x_in_last_lp) * sign;
 				transformers[index_of_x_in_last_lp] = [index_of_x_in_new_lp, sign](const Simplex::ListOfX &list) {
 					return sign * list[index_of_x_in_new_lp];
 				};
@@ -180,7 +183,7 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 		}
 	}
 	lp.set_z(z);
-	lp.set_signs(LP::SignsType(number_of_x, LP::Sign::positive));
+	lp.set_signs(LP::SignsType(number_of_x_prime, LP::Sign::positive));
 
 	/// change each @c b to positive
 	LP::RHSesType rhs = lp.get_rhs();
@@ -216,4 +219,27 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 	}
 	lp.set_comparatives(comparatives);
 	lp.set_table(table);
+}
+
+void Simplex::made_base() {
+	LP new_lp;
+	number_of_r = 0;
+	auto z = lp.get_z();
+	for(auto &row: lp.get_table()) {
+		for(size_t i = number_of_x; i < lp.get_number_of_x(); ++i) {
+			if(row[i] == -1) {
+				++number_of_r;
+				z.push_back(LP::M(1, 0));
+			}
+		}
+	}
+
+	size_t number_of_var = lp.get_number_of_x() + number_of_r;
+	new_lp.set_number_of_x(number_of_var);
+	new_lp.set_number_of_line(lp.get_number_of_line());
+	new_lp.set_comparatives(lp.get_comparatives());
+	new_lp.set_signs(LP::SignsType(number_of_var, LP::Sign::positive));
+	new_lp.set_comparatives(lp.get_comparatives());
+	new_lp.set_rhs(lp.get_rhs());
+	new_lp.set_type_of_optimization(lp.get_type_of_optimization());
 }

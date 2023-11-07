@@ -8,6 +8,8 @@ using namespace std;
 /// Save linear programing information
 class LP {
 public:
+	class M;
+
 	enum TypeOfOptimization {
 		min = 0, max = 1
 	};
@@ -24,7 +26,7 @@ public:
 		greater = 1
 	};
 
-	typedef int64_t Coefficient;
+	typedef M Coefficient;
 	typedef vector<Coefficient> ZType;
 	typedef vector<Coefficient> RHSesType;
 	typedef Coefficient CellOfTable;
@@ -72,6 +74,52 @@ public:
 	static string to_string(Sign s) noexcept;
 
 	static string to_string(Comparative c) noexcept;
+
+	static string to_string(M m) noexcept;
+
+	class M {
+	public:
+		M();
+		M(double num);
+		M(double inf, double num);
+
+		M(const M &other);
+		M(M &&other);
+
+		M &operator=(const M &other);
+		M &operator=(const double &other);
+		M &operator=(M &&other);
+
+		M operator+(const M &obj) const noexcept;
+		M operator+(const double &obj) const noexcept;
+
+		M operator*(const double &obj) const noexcept;
+
+		M operator-() const noexcept;
+
+		M operator-(const M &obj) const noexcept;
+		M operator-(const double &obj) const noexcept;
+
+		bool operator==(const M &other) const noexcept;
+		bool operator==(const double &other) const noexcept;
+
+		bool operator>(const M &other) const noexcept;
+		bool operator>(const double &other) const noexcept;
+
+		bool operator>=(const M &other) const noexcept;
+		bool operator>=(const double &other) const noexcept;
+
+		bool operator<(const M &other) const noexcept;
+		bool operator<(const double &other) const noexcept;
+
+		bool operator<=(const M &other) const noexcept;
+		bool operator<=(const double &other) const noexcept;
+
+		operator string() const noexcept;
+	private:
+		double inf;
+		double num;
+	};
 
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x

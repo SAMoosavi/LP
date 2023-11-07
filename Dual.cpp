@@ -13,16 +13,17 @@ Dual::Dual(LP lp) {
 
 	cout << endl << ColoredString::blue("Dual:") << endl;
 	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_rhs(),
-		lp.get_number_of_x(), T(lp.get_table()),
+		lp.get_number_of_x(), Transpose(lp.get_table()),
 		SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()), lp.get_z(),
 		ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization()));
 }
 
 /// This changes polynomial to string.
-string Dual::to_string(const string & varname, const vector<int64_t> & arr, size_t n, bool show_empty,
-	const vector<size_t> & max_num_len) {
+template<typename T>
+string Dual::to_string(const string &varname, const vector<T> &arr, size_t n, bool show_empty,
+	const vector<size_t> &max_num_len) {
 	const string VAR = varname + "_";
-	size_t MAX_LEN_OF_VAR = (::to_string(n) + VAR).size();
+	size_t MAX_LEN_OF_VAR = (std::to_string(n) + VAR).size();
 	string r;
 	bool exits_before = false;
 
@@ -39,8 +40,9 @@ string Dual::to_string(const string & varname, const vector<int64_t> & arr, size
 			r += " ";
 		return r;
 	};
+
 	// This calculates number of space needed to before of variable.
-	auto generate_space = [](const string & s, size_t max_num_len) {
+	auto generate_space = [](const string &s, size_t max_num_len) {
 		string r;
 		if(max_num_len > s.size())
 			for(size_t i = 0; i < max_num_len - s.size(); ++i)
@@ -52,7 +54,7 @@ string Dual::to_string(const string & varname, const vector<int64_t> & arr, size
 		if(arr[i] == 0)
 			r += generate_empty(i);
 		else {
-			int64_t num;
+			T num;
 			if(arr[i] > 0) {
 				if(exits_before)
 					r += " + ";
@@ -63,11 +65,11 @@ string Dual::to_string(const string & varname, const vector<int64_t> & arr, size
 				r += " - ";
 				num = -arr[i];
 			}
-			string num_str = ::to_string(num);
+			string num_str = LP::to_string(num);
 			if(i != 0)
 				r += generate_space(num_str, max_num_len[i]);
 			r += num_str;
-			r += VAR + ::to_string(i + 1);
+			r += VAR + std::to_string(i + 1);
 			exits_before = true;
 		}
 	}
@@ -78,11 +80,11 @@ string Dual::to_string(const string & varname, const vector<int64_t> & arr, size
   * this function calculates maximum length in column.
   * @return list of maximum length in each column.
   */
-vector<size_t> Dual::max2DVec(const LP::TableType & v) {
+vector<size_t> Dual::max2DVec(const LP::TableType &v) {
 	vector<size_t> m(v[0].size(), 0);
-	for(const auto & b: v) {
+	for(const auto &b: v) {
 		for(size_t i = 0; i < b.size(); ++i) {
-			auto s = ::to_string(b[i]).size();
+			auto s = LP::to_string(b[i]).size();
 			if(b[i] < 0)
 				s--;
 			if(s > m[i])
@@ -93,20 +95,20 @@ vector<size_t> Dual::max2DVec(const LP::TableType & v) {
 }
 
 /// this function prints the LP
-void Dual::print(const string & varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization,
-	const LP::ZType & z,
-	size_t number_of_line, const LP::TableType & table, LP::ComparativesType comparatives,
-	const LP::RHSesType & rhSes, LP::SignsType signs) {
+void Dual::print(const string &varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization,
+	const LP::ZType &z,
+	size_t number_of_line, const LP::TableType &table, LP::ComparativesType comparatives,
+	const LP::RHSesType &rhSes, LP::SignsType signs) {
 	// Z
 	cout << ColoredString::magenta(LP::to_string(type_of_optimization)) << " "
 	     << ColoredString::red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0)))
 	     << endl;
 
-	// S.T.
+	// S.Transpose.
 	for(int i = 0; i < number_of_line; ++i)
 		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
 		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
-		     << ColoredString::yellow(::to_string(rhSes[i]))
+		     << ColoredString::yellow(LP::to_string(rhSes[i]))
 		     << endl;
 
 	// Signs of variables
@@ -116,10 +118,10 @@ void Dual::print(const string & varname, size_t number_of_x, LP::TypeOfOptimizat
 
 	const string VAR = varname + "_";
 
-	for(const auto & s1: sign) {
+	for(const auto &s1: sign) {
 		string s;
-		for(const auto & s2: s1.second)
-			s += VAR + ::to_string(s2 + 1) + ", ";
+		for(const auto &s2: s1.second)
+			s += VAR + std::to_string(s2 + 1) + ", ";
 		s.pop_back();
 		s.pop_back();
 		cout << ColoredString::magenta(s) << " " << ColoredString::magenta(LP::to_string(s1.first)) << endl;
@@ -127,8 +129,8 @@ void Dual::print(const string & varname, size_t number_of_x, LP::TypeOfOptimizat
 }
 
 /// This function calculates transpose of @c table.
-LP::TableType Dual::T(const LP::TableType & table) {
-	LP::TableType r(table[0].size(), vector<int64_t>(table.size()));
+LP::TableType Dual::Transpose(const LP::TableType &table) {
+	LP::TableType r(table[0].size(), LP::RowOfTable(table.size()));
 	for(int i = 0; i < table.size(); ++i)
 		for(int j = 0; j < table[i].size(); ++j)
 			r[j][i] = table[i][j];
@@ -136,7 +138,7 @@ LP::TableType Dual::T(const LP::TableType & table) {
 }
 
 /// This function gets comparatives of lines and creates signs of dual variables.
-LP::SignsType Dual::ComparativeToSign(const LP::ComparativesType & as, size_t num,
+LP::SignsType Dual::ComparativeToSign(const LP::ComparativesType &as, size_t num,
 	LP::TypeOfOptimization type_of_optimization) {
 	LP::SignsType r(num);
 	for(int i = 0; i < num; ++i) {
@@ -161,7 +163,7 @@ LP::SignsType Dual::ComparativeToSign(const LP::ComparativesType & as, size_t nu
 }
 
 /// This function gets sings of variables and creates comparatives of dual lines.
-LP::ComparativesType Dual::SignToComparative(const LP::SignsType & r, size_t num,
+LP::ComparativesType Dual::SignToComparative(const LP::SignsType &r, size_t num,
 	LP::TypeOfOptimization type_of_optimization) {
 	LP::ComparativesType comparatives(num);
 	for(int i = 0; i < num; ++i) {

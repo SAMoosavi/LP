@@ -77,9 +77,12 @@ void InputLP::input_z() {
 	cout << ColoredString::white("Pleases enter Z: ")
 	     << ColoredString::red("(for input 2x_1 + 3 x_3 and you have 4 var enter 2 0 3 0)")
 	     << flush;
-	LP::ZType z(lp.get_number_of_x());
-	for(auto & x: z)
+	vector<int64_t> v(lp.get_number_of_x()) ;
+	for(auto & x: v)
 		cin >> x;
+	LP::ZType z(lp.get_number_of_x());
+	for(size_t i = 0; i < lp.get_number_of_x(); i++)
+		z[i] = v[i];
 	lp.set_z(z);
 }
 
@@ -121,9 +124,14 @@ void
 InputLP::input_line(size_t row_number, LP::TableType & table, LP::ComparativesType & comparatives, LP::RHSesType & b) {
 	auto & row = table[row_number];
 	row.resize(lp.get_number_of_x());
-	for(auto & cell: row)
-		cin >> cell;
-	cin >> comparatives[row_number] >> b[row_number];
+	for(auto & cell: row) {
+		int64_t n;
+		cin >> n;
+		cell = n;
+	}
+	int64_t n;
+	cin >> comparatives[row_number] >> n;
+	b[row_number] = n;
 }
 
 void InputLP::input_signs() {
