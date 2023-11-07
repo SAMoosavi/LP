@@ -122,6 +122,7 @@ Simplex::Simplex(LP last_lp) {
 		last_lp.get_signs());
 
 	creat_std_lp(last_lp);
+	made_base();
 
 	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
 		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
@@ -224,13 +225,28 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 void Simplex::made_base() {
 	LP new_lp;
 	number_of_r = 0;
+	LP::M m;
+	switch(lp.get_type_of_optimization()) {
+		case LP::min:
+			m = LP::M(1, 0);
+			break;
+		case LP::max:
+			m = LP::M(-1, 0);
+			break;
+	}
+
 	auto z = lp.get_z();
 	for(auto &row: lp.get_table()) {
+		bool exists_one = false;
 		for(size_t i = number_of_x; i < lp.get_number_of_x(); ++i) {
-			if(row[i] == -1) {
-				++number_of_r;
-				z.push_back(LP::M(1, 0));
+			if(row[i] == 1) {
+				exists_one = true;
+				break;
 			}
+		}
+		if(!exists_one) {
+			++number_of_r;
+			z.push_back(m);
 		}
 	}
 
@@ -242,4 +258,27 @@ void Simplex::made_base() {
 	new_lp.set_comparatives(lp.get_comparatives());
 	new_lp.set_rhs(lp.get_rhs());
 	new_lp.set_type_of_optimization(lp.get_type_of_optimization());
+	new_lp.set_z(z);
+	LP::TableType new_table = new_lp.get_table();
+	LP::TableType last_table = lp.get_table();
+	for(int i = 0; i < last_table.size() ; ++i)
+		for(int j = 0; j < last_table[i].size(); ++j)
+			new_table[i][j] = last_table[i][j];
+
+	size_t index_of_r = 0;
+	for(int i = 0; i <new_table.size(); ++i) {
+		bool exists_one = false;
+		for(int j = number_of_x; j < new_table[i].size(); ++j) {
+			if(new_table[i][j] == 1) {
+				exists_one = true;
+				break;
+			}
+		}
+		if(!exists_one) {
+			new_table[i][number_of_x + number_of_s + index_of_r] = 1;
+			++index_of_r;
+		}
+	}
+	new_lp.set_table(new_table);
+	lp = new_lp;
 }
