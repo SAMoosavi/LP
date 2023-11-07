@@ -313,6 +313,15 @@ LP::M::operator string() const noexcept {
 	return s;
 }
 
+LP::M LP::M::operator*(const LP::M &obj) const {
+	if(inf == 0)
+		return obj * inf;
+	else if(obj.inf == 0)
+		return *this * obj.num;
+	else
+		throw std::runtime_error(ColoredString::red("M * M must be one of they inf equal to 0"));
+}
+
 LP::M LP::M::operator*(const double &obj) const noexcept {
 	return M(inf * obj,num * obj);
 }

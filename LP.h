@@ -93,6 +93,7 @@ public:
 		M operator+(const M &obj) const noexcept;
 		M operator+(const double &obj) const noexcept;
 
+		M operator*(const M &obj) const;
 		M operator*(const double &obj) const noexcept;
 
 		M operator-() const noexcept;
