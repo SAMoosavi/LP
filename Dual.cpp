@@ -62,7 +62,10 @@ string Dual::to_string(const string &varname, const vector<T> &arr, size_t n, bo
 					r += "   ";
 				num = arr[i];
 			} else if(arr[i] < 0) {
-				r += " - ";
+				if(exits_before)
+					r += " - ";
+				else
+					r += "- ";
 				num = -arr[i];
 			}
 			string num_str = LP::to_string(num);
