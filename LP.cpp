@@ -62,7 +62,7 @@ LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_opt
 void LP::validate_table() const {
 	if(this->table.size() != number_of_line)
 		throw runtime_error(ColoredString::red("Invalid size of table."));
-	for(auto & t: this->table)
+	for(auto &t: this->table)
 		if(t.size() != number_of_x)
 			throw runtime_error(ColoredString::red("Invalid size of table."));
 }
@@ -144,7 +144,7 @@ LP::Sign LP::sign_at(size_t index) const noexcept {
 
 void LP::set_number_of_x(size_t num) {
 	number_of_x = num;
-	for(auto & t: table)
+	for(auto &t: table)
 		t.resize(num);
 	z.resize(num);
 	signs.resize(num);
@@ -153,7 +153,7 @@ void LP::set_number_of_x(size_t num) {
 void LP::set_number_of_line(size_t num) {
 	number_of_line = num;
 	table.resize(num);
-	for(auto & t: table)
+	for(auto &t: table)
 		t.resize(number_of_x);
 	b.resize(num);
 	comparatives.resize(num);
@@ -163,27 +163,27 @@ void LP::set_type_of_optimization(LP::TypeOfOptimization type) {
 	type_of_optimization = type;
 }
 
-void LP::set_z(const LP::ZType & other_z) {
+void LP::set_z(const LP::ZType &other_z) {
 	z = other_z;
 	validate_z();
 }
 
-void LP::set_table(const LP::TableType & t) {
+void LP::set_table(const LP::TableType &t) {
 	table = t;
 	validate_table();
 }
 
-void LP::set_rhs(const LP::RHSesType & rhs) {
+void LP::set_rhs(const LP::RHSesType &rhs) {
 	b = rhs;
 	validate_b();
 }
 
-void LP::set_comparatives(const LP::ComparativesType & c) {
+void LP::set_comparatives(const LP::ComparativesType &c) {
 	comparatives = c;
 	validate_comparatives();
 }
 
-void LP::set_signs(const LP::SignsType & s) {
+void LP::set_signs(const LP::SignsType &s) {
 	signs = s;
 	validate_signs();
 }
