@@ -3,18 +3,14 @@ project(LP)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Dual Dual.cpp
+add_executable(main main.cpp
+		Dual.cpp
 		InputLP.cpp
 		InputLP.h
 		ColoredString.cpp
 		ColoredString.h
 		LP.cpp
-		LP.h)
-
-add_executable(Simplex Simplex.cpp
-		InputLP.cpp
-		InputLP.h
-		ColoredString.cpp
-		ColoredString.h
-		LP.cpp
-		LP.h)
+		LP.h
+		Simplex.cpp
+		Dual.h
+		Simplex.h)

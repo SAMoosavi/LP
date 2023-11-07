@@ -1,14 +1,28 @@
 #include <bits/stdc++.h>
 #include "InputLP.h"
 #include "ColoredString.h"
+#include "Dual.h"
 
 using namespace std;
 
+
+Dual::Dual(LP lp) {
+	cout << endl << ColoredString::blue("Prime:") << endl;
+	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(), lp.get_table(),
+		lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+
+	cout << endl << ColoredString::blue("Dual:") << endl;
+	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_rhs(),
+		lp.get_number_of_x(), T(lp.get_table()),
+		SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()), lp.get_z(),
+		ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization()));
+}
+
 /// This changes polynomial to string.
-string to_string(const string & varname, const vector<int64_t> & arr, size_t n, bool show_empty,
+string Dual::to_string(const string & varname, const vector<int64_t> & arr, size_t n, bool show_empty,
 	const vector<size_t> & max_num_len) {
 	const string VAR = varname + "_";
-	size_t MAX_LEN_OF_VAR = (to_string(n) + VAR).size();
+	size_t MAX_LEN_OF_VAR = (::to_string(n) + VAR).size();
 	string r;
 	bool exits_before = false;
 
@@ -49,11 +63,11 @@ string to_string(const string & varname, const vector<int64_t> & arr, size_t n, 
 				r += " - ";
 				num = -arr[i];
 			}
-			string num_str = to_string(num);
+			string num_str = ::to_string(num);
 			if(i != 0)
 				r += generate_space(num_str, max_num_len[i]);
 			r += num_str;
-			r += VAR + to_string(i + 1);
+			r += VAR + ::to_string(i + 1);
 			exits_before = true;
 		}
 	}
@@ -64,11 +78,11 @@ string to_string(const string & varname, const vector<int64_t> & arr, size_t n, 
   * this function calculates maximum length in column.
   * @return list of maximum length in each column.
   */
-vector<size_t> max2DVec(const LP::TableType & v) {
+vector<size_t> Dual::max2DVec(const LP::TableType & v) {
 	vector<size_t> m(v[0].size(), 0);
 	for(const auto & b: v) {
 		for(size_t i = 0; i < b.size(); ++i) {
-			auto s = to_string(b[i]).size();
+			auto s = ::to_string(b[i]).size();
 			if(b[i] < 0)
 				s--;
 			if(s > m[i])
@@ -79,7 +93,8 @@ vector<size_t> max2DVec(const LP::TableType & v) {
 }
 
 /// this function prints the LP
-void print(const string & varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization, const LP::ZType & z,
+void Dual::print(const string & varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization,
+	const LP::ZType & z,
 	size_t number_of_line, const LP::TableType & table, LP::ComparativesType comparatives,
 	const LP::RHSesType & rhSes, LP::SignsType signs) {
 	// Z
@@ -91,7 +106,7 @@ void print(const string & varname, size_t number_of_x, LP::TypeOfOptimization ty
 	for(int i = 0; i < number_of_line; ++i)
 		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
 		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
-		     << ColoredString::yellow(to_string(rhSes[i]))
+		     << ColoredString::yellow(::to_string(rhSes[i]))
 		     << endl;
 
 	// Signs of variables
@@ -104,7 +119,7 @@ void print(const string & varname, size_t number_of_x, LP::TypeOfOptimization ty
 	for(const auto & s1: sign) {
 		string s;
 		for(const auto & s2: s1.second)
-			s += VAR + to_string(s2 + 1) + ", ";
+			s += VAR + ::to_string(s2 + 1) + ", ";
 		s.pop_back();
 		s.pop_back();
 		cout << ColoredString::magenta(s) << " " << ColoredString::magenta(LP::to_string(s1.first)) << endl;
@@ -112,7 +127,7 @@ void print(const string & varname, size_t number_of_x, LP::TypeOfOptimization ty
 }
 
 /// This function calculates transpose of @c table.
-LP::TableType T(const LP::TableType & table) {
+LP::TableType Dual::T(const LP::TableType & table) {
 	LP::TableType r(table[0].size(), vector<int64_t>(table.size()));
 	for(int i = 0; i < table.size(); ++i)
 		for(int j = 0; j < table[i].size(); ++j)
@@ -121,8 +136,8 @@ LP::TableType T(const LP::TableType & table) {
 }
 
 /// This function gets comparatives of lines and creates signs of dual variables.
-LP::SignsType ComparativeToSign(const LP::ComparativesType & as, size_t num,
-		LP::TypeOfOptimization type_of_optimization) {
+LP::SignsType Dual::ComparativeToSign(const LP::ComparativesType & as, size_t num,
+	LP::TypeOfOptimization type_of_optimization) {
 	LP::SignsType r(num);
 	for(int i = 0; i < num; ++i) {
 		switch(as[i]) {
@@ -146,8 +161,8 @@ LP::SignsType ComparativeToSign(const LP::ComparativesType & as, size_t num,
 }
 
 /// This function gets sings of variables and creates comparatives of dual lines.
-LP::ComparativesType SignToComparative(const LP::SignsType & r, size_t num,
-		LP::TypeOfOptimization type_of_optimization) {
+LP::ComparativesType Dual::SignToComparative(const LP::SignsType & r, size_t num,
+	LP::TypeOfOptimization type_of_optimization) {
 	LP::ComparativesType comparatives(num);
 	for(int i = 0; i < num; ++i) {
 		switch(r[i]) {
@@ -171,26 +186,10 @@ LP::ComparativesType SignToComparative(const LP::SignsType & r, size_t num,
 }
 
 /// This function swaps max to min(or min to max).
-LP::TypeOfOptimization change_type_of_optimization(LP::TypeOfOptimization type) {
+LP::TypeOfOptimization Dual::change_type_of_optimization(LP::TypeOfOptimization type) {
 	switch(type) {
 		case LP::TypeOfOptimization::min: return LP::TypeOfOptimization::max;
 		case LP::TypeOfOptimization::max: return LP::TypeOfOptimization::min;
 	}
 	throw std::runtime_error("LP::TypeOfOptimization is not correct!");
-}
-
-int main() {
-	auto input = InputLP();
-	LP lp = input.input();
-
-	cout << endl << ColoredString::blue("Prime:") << endl;
-	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(), lp.get_table(),
-		lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
-
-	cout << endl << ColoredString::blue("Dual:") << endl;
-	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_rhs(),
-		lp.get_number_of_x(), T(lp.get_table()),
-		SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()), lp.get_z(),
-		ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization()));
-
 }
