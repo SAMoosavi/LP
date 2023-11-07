@@ -12,7 +12,7 @@ template<typename T>
 string to_string(const string &varname, const vector<T> &arr, size_t n, bool show_empty,
 	const vector<size_t> &max_num_len) {
 	const string VAR = varname + "_";
-	size_t MAX_LEN_OF_VAR = (to_string(n) + VAR).size();
+	size_t MAX_LEN_OF_VAR = (std::to_string(n) + VAR).size();
 	string r;
 	bool exits_before = false;
 
@@ -22,13 +22,14 @@ string to_string(const string &varname, const vector<T> &arr, size_t n, bool sho
 		if(!show_empty)
 			return "";
 		string r;
-		int operator_size = 3;
+		int operator_size = 2;
 		if(colum_index == 0)
 			operator_size = 0;
 		for(size_t i = 0; i < MAX_LEN_OF_VAR + max_num_len[colum_index] + operator_size; ++i)
 			r += " ";
 		return r;
 	};
+
 	// This calculates number of space needed to before of variable.
 	auto generate_space = [](const string &s, size_t max_num_len) {
 		string r;
@@ -42,22 +43,19 @@ string to_string(const string &varname, const vector<T> &arr, size_t n, bool sho
 		if(arr[i] == 0)
 			r += generate_empty(i);
 		else {
-			T num;
 			if(arr[i] > 0) {
 				if(exits_before)
-					r += " + ";
+					r += " +";
 				else if(i != 0)
-					r += "   ";
-				num = arr[i];
+					r += "  ";
 			} else if(arr[i] < 0) {
-				r += " - ";
-				num = -arr[i];
+				if(exits_before)
+					r += " ";
 			}
-			string num_str = LP::to_string(num);
-			if(i != 0)
-				r += generate_space(num_str, max_num_len[i]);
+			string num_str = LP::to_string(arr[i]);
+			r += generate_space(num_str, max_num_len[i]);
 			r += num_str;
-			r += VAR + to_string(i + 1);
+			r += VAR + std::to_string(i + 1);
 			exits_before = true;
 		}
 	}
@@ -73,8 +71,6 @@ vector<size_t> max2DVec(const LP::TableType &v) {
 	for(const auto &b: v) {
 		for(size_t i = 0; i < b.size(); ++i) {
 			auto s = LP::to_string(b[i]).size();
-			if(b[i] < 0)
-				s--;
 			if(s > m[i])
 				m[i] = s;
 		}
@@ -122,6 +118,10 @@ Simplex::Simplex(LP last_lp) {
 		last_lp.get_signs());
 
 	creat_std_lp(last_lp);
+
+	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
+		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+
 	made_base();
 
 	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
