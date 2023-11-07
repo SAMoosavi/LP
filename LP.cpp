@@ -294,14 +294,21 @@ bool LP::M::operator<=(const double &other) const noexcept {
 
 LP::M::operator string() const noexcept {
 	string s;
+	const auto to_string = [](const double &d) {
+		string num_text = std::to_string(d);
+		return num_text.substr(0, num_text.find(".") + 3);
+	};
+
 	if(inf != 0)
-		s += std::to_string(-inf) + "M";
+		s += to_string(-inf) + "M";
 	if(inf != 0 && num != 0)
 		s += " ";
 	if(num != 0)
-		s += std::to_string(num);
+		s += to_string(num);
 	if(inf != 0 && num != 0)
 		s = "(" + s + ")";
+	if(s.empty())
+		s = to_string(0);
 
 	return s;
 }
