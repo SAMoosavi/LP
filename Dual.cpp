@@ -33,7 +33,7 @@ string Dual::to_string(const string &varname, const vector<T> &arr, size_t n, bo
 		if(!show_empty)
 			return "";
 		string r;
-		int operator_size = 3;
+		int operator_size = 2;
 		if(colum_index == 0)
 			operator_size = 0;
 		for(size_t i = 0; i < MAX_LEN_OF_VAR + max_num_len[colum_index] + operator_size; ++i)
@@ -54,23 +54,17 @@ string Dual::to_string(const string &varname, const vector<T> &arr, size_t n, bo
 		if(arr[i] == 0)
 			r += generate_empty(i);
 		else {
-			T num;
 			if(arr[i] > 0) {
 				if(exits_before)
-					r += " + ";
+					r += " +";
 				else if(i != 0)
-					r += "   ";
-				num = arr[i];
+					r += "  ";
 			} else if(arr[i] < 0) {
 				if(exits_before)
-					r += " - ";
-				else
-					r += "- ";
-				num = -arr[i];
+					r += " ";
 			}
-			string num_str = LP::to_string(num);
-			if(i != 0)
-				r += generate_space(num_str, max_num_len[i]);
+			string num_str = LP::to_string(arr[i]);
+			r += generate_space(num_str, max_num_len[i]);
 			r += num_str;
 			r += VAR + std::to_string(i + 1);
 			exits_before = true;
@@ -88,8 +82,6 @@ vector<size_t> Dual::max2DVec(const LP::TableType &v) {
 	for(const auto &b: v) {
 		for(size_t i = 0; i < b.size(); ++i) {
 			auto s = LP::to_string(b[i]).size();
-			if(b[i] < 0)
-				s--;
 			if(s > m[i])
 				m[i] = s;
 		}
