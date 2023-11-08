@@ -23,12 +23,18 @@ private:
 
 	void made_base();
 
+	void ans();
+
 	LP lp;
 	Transformers transformers;
 	size_t number_of_x;
 	size_t number_of_s;
 	size_t number_of_r;
 	Bases bases;
+	vector<LP::M> cb{};
+	vector<size_t> cj{};
+	vector<LP::M> c_bar{};
+	LP::M z_bar;
 };
 
 #endif

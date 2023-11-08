@@ -126,6 +126,11 @@ Simplex::Simplex(LP last_lp) {
 
 	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
 		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+
+	ans();
+
+	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
+		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
 }
 
 void Simplex::creat_std_lp(const LP &last_lp) {
@@ -281,4 +286,32 @@ void Simplex::made_base() {
 	}
 	new_lp.set_table(new_table);
 	lp = new_lp;
+}
+
+template<typename T>
+T operator*(const vector<T>& a, const vector<T>& b){
+	if(a.size() != b.size())
+		throw std::runtime_error(ColoredString::red("length of a and b must be equal"));
+
+	T r;
+	for(int i = 0; i < a.size(); ++i)
+		r = r + (a[i] * b[i]);
+
+	return r;
+}
+
+void Simplex::ans() {
+	for(const auto &row:lp.get_table()) {
+		for(int i = number_of_x; i < row.size(); ++i) {
+			if(row[i] == 1){
+				cj.push_back(i);
+				cb.push_back(lp.z_at(i));
+			}
+		}
+	}
+	z_bar = cb * lp.get_rhs();
+//	for(int i = 0; i < ; ++i) {
+//
+//	}
+//	c_bar.push_back()
 }

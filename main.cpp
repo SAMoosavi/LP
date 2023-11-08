@@ -10,8 +10,8 @@ using namespace std;
 int main() {
 	//	auto input = InputLP();
 	//	LP lp = input.input();
-	LP lp(3, 2, LP::TypeOfOptimization::max, {0, 1, 1}, {{1, 1, 1},
-	                                                     {2, 2, 0}}, {1, 2},
+	LP lp(3, 2, LP::TypeOfOptimization::max, {0, -1, 1}, {{1, -1, 1},
+	                                                     {2, -2, 0}}, {1, -2},
 		{LP::Comparative::lower, LP::Comparative::equal},
 		{LP::Sign::negative, LP::Sign::positive, LP::Sign::freeSign});
 
