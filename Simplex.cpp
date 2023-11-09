@@ -418,8 +418,8 @@ void Simplex::ans() {
 
 		auto last_z_bar = z_bar;
 		z_bar = cb * rhs;
-//		if(z_bar == last_z_bar)
-//			break;
+		if(z_bar == last_z_bar)
+			break;
 
 		t_table = Transpose(table);
 		new_base_column_index = max(c_bar);
