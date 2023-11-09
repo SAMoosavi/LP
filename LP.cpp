@@ -283,7 +283,7 @@ bool LP::M::operator==(const double &other) const noexcept {
 }
 
 bool LP::M::operator>(const LP::M &other) const noexcept {
-	return (inf > other.inf) || ((inf == other.inf) && (num > other.inf));
+	return (inf > other.inf) || ((inf == other.inf) && (num > other.num));
 }
 
 bool LP::M::operator>(const double &other) const noexcept {
@@ -322,7 +322,7 @@ LP::M::operator string() const noexcept {
 	};
 
 	if(inf != 0)
-		s += to_string(-inf) + "M";
+		s += to_string(inf) + "M";
 	if(inf != 0 && num != 0)
 		s += " ";
 	if(num != 0)
@@ -359,12 +359,10 @@ LP::M LP::M::operator*=(const double &obj) noexcept {
 }
 
 LP::M LP::M::operator/(const LP::M &obj) const {
-	if(inf == 0)
-		return obj / num;
-	else if(obj.inf == 0)
+	if(obj.inf == 0)
 		return *this / obj.num;
 	else
-		throw std::runtime_error(ColoredString::red("M * M must be one of they inf equal to 0"));
+		throw std::runtime_error(ColoredString::red("M1 / M2 must be M2 inf equal to 0"));
 }
 
 LP::M LP::M::operator/(const double &obj) const noexcept {

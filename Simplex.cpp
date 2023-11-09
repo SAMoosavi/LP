@@ -131,6 +131,20 @@ Simplex::Simplex(LP last_lp) {
 
 	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
 		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+	cout << "cb: ";
+	for(auto x:cb)
+		cout << LP::to_string(x) << " ";
+	cout << endl;
+	cout << "cj: ";
+	for(auto x:cj)
+		cout << LP::to_string(x) << " ";
+	cout << endl;
+	cout << "c_bar: ";
+	for(auto x:c_bar)
+		cout << LP::to_string(x) << " ";
+	cout << endl;
+	cout<< "z_bar: " << LP::to_string(z_bar) << endl;
+	cout << "-----------------------------------------------------------"<<endl;
 }
 
 void Simplex::creat_std_lp(const LP &last_lp) {
@@ -359,11 +373,28 @@ void Simplex::ans() {
 	ssize_t new_base_column_index = max(c_bar);
 	ssize_t new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 	while(new_base_column_index > -1 && new_base_row_index > -1) {
-		LP::M a = LP::M(1) / t_table[new_base_column_index][new_base_row_index];
+		print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
+			lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+		cout << "cb: ";
+		for(auto x:cb)
+			cout << LP::to_string(x) << " ";
+		cout << endl;
+		cout << "cj: ";
+		for(auto x:cj)
+			cout << LP::to_string(x) << " ";
+		cout << endl;
+		cout << "c_bar: ";
+		for(auto x:c_bar)
+			cout << LP::to_string(x) << " ";
+		cout << endl;
+		cout<< "z_bar: " << LP::to_string(z_bar) << endl;
+		cout << "-----------------------------------------------------------"<<endl;
+
+		LP::M a = LP::M(1) / table[new_base_row_index][new_base_column_index];
 		for(auto &cell: table[new_base_row_index])
 			cell *= a;
 
-		rhs[new_base_column_index] *= a;
+		rhs[new_base_row_index] *= a;
 
 		cj[new_base_row_index] = new_base_column_index;
 		cb[new_base_row_index] = lp.z_at(new_base_column_index);
@@ -378,7 +409,7 @@ void Simplex::ans() {
 			for(int i = 0; i < t.size(); ++i)
 				t[i] -= a * new_base_row[i];
 
-			rhs[row_index] -= a * rhs[new_base_column_index];
+			rhs[row_index] -= a * rhs[new_base_row_index];
 		}
 
 		a = c_bar[new_base_column_index] / new_base_row[new_base_column_index];
@@ -386,13 +417,14 @@ void Simplex::ans() {
 			c_bar[i] -= a * new_base_row[i];
 
 		auto last_z_bar = z_bar;
-		z_bar -= a * rhs[new_base_column_index];
+		z_bar = cb * rhs;
 //		if(z_bar == last_z_bar)
 //			break;
 
 		t_table = Transpose(table);
-		new_base_column_index = max(cb);
-		new_base_row_index = min_test(t_table[new_base_column_index], rhs);
+		new_base_column_index = max(c_bar);
+		if(new_base_column_index > -1)
+			new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 		lp.set_rhs(rhs);
 		lp.set_table(table);
 	}
