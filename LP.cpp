@@ -210,9 +210,9 @@ LP::M::M(const LP::M &other)
 : inf(other.inf)
 , num(other.num) {}
 
-LP::M::M(LP::M &&other)
-: inf(std::move(other.inf))
-, num(std::move(other.num)) {}
+LP::M::M(LP::M &&other) noexcept
+: inf(other.inf)
+, num(other.num) {}
 
 LP::M &LP::M::operator=(const double &other) {
 	inf = 0;
@@ -226,22 +226,33 @@ LP::M &LP::M::operator=(const LP::M &other) {
 	return *this;
 }
 
-LP::M &LP::M::operator=(LP::M &&other) {
-	inf = std::move(other.inf);
-	num = std::move(other.num);
+LP::M &LP::M::operator=(LP::M &&other) noexcept {
+	inf = other.inf;
+	num = other.num;
 	return *this;
 }
 
 LP::M LP::M::operator+(const LP::M &obj) const noexcept {
-	return M(inf + obj.inf, num + obj.num);
+	return {inf + obj.inf, num + obj.num};
 }
 
 LP::M LP::M::operator+(const double &obj) const noexcept {
 	return *this + M(obj);
 }
 
+LP::M LP::M::operator+=(const LP::M &obj) noexcept {
+	inf += obj.inf;
+	num += obj.num;
+	return *this;
+}
+
+LP::M LP::M::operator+=(const double &obj) noexcept {
+	num += obj;
+	return *this;
+}
+
 LP::M LP::M::operator-() const noexcept {
-	return M(-inf, -num);
+	return {-inf, -num};
 }
 
 LP::M LP::M::operator-(const LP::M &obj) const noexcept {
@@ -250,6 +261,17 @@ LP::M LP::M::operator-(const LP::M &obj) const noexcept {
 
 LP::M LP::M::operator-(const double &obj) const noexcept {
 	return *this - M(obj);;
+}
+
+LP::M &LP::M::operator-=(const LP::M &obj) noexcept {
+	inf -= obj.inf;
+	num -= obj.num;
+	return *this;
+}
+
+LP::M &LP::M::operator-=(const double &obj) noexcept {
+	num -= obj;
+	return *this;
 }
 
 bool LP::M::operator==(const LP::M &other) const noexcept {
@@ -296,7 +318,7 @@ LP::M::operator string() const noexcept {
 	string s;
 	const auto to_string = [](const double &d) {
 		string num_text = std::to_string(d);
-		return num_text.substr(0, num_text.find(".") + 3);
+		return num_text.substr(0, num_text.find('.') + 3);
 	};
 
 	if(inf != 0)
@@ -315,7 +337,7 @@ LP::M::operator string() const noexcept {
 
 LP::M LP::M::operator*(const LP::M &obj) const {
 	if(inf == 0)
-		return obj * inf;
+		return obj * num;
 	else if(obj.inf == 0)
 		return *this * obj.num;
 	else
@@ -323,5 +345,28 @@ LP::M LP::M::operator*(const LP::M &obj) const {
 }
 
 LP::M LP::M::operator*(const double &obj) const noexcept {
-	return M(inf * obj,num * obj);
+	return {inf * obj,num * obj};
+}
+
+LP::M LP::M::operator*=(const LP::M &obj) {
+	*this = *this * obj;
+	return *this;
+}
+
+LP::M LP::M::operator*=(const double &obj) noexcept {
+	*this = *this * obj;
+	return *this;
+}
+
+LP::M LP::M::operator/(const LP::M &obj) const {
+	if(inf == 0)
+		return obj / num;
+	else if(obj.inf == 0)
+		return *this / obj.num;
+	else
+		throw std::runtime_error(ColoredString::red("M * M must be one of they inf equal to 0"));
+}
+
+LP::M LP::M::operator/(const double &obj) const noexcept {
+	return {inf / obj,num / obj};
 }

@@ -84,22 +84,34 @@ public:
 		M(double inf, double num);
 
 		M(const M &other);
-		M(M &&other);
+		M(M &&other) noexcept;
 
 		M &operator=(const M &other);
 		M &operator=(const double &other);
-		M &operator=(M &&other);
+		M &operator=(M &&other) noexcept;
 
 		M operator+(const M &obj) const noexcept;
 		M operator+(const double &obj) const noexcept;
 
+		M operator+=(const M &obj) noexcept;
+		M operator+=(const double &obj) noexcept;
+
 		M operator*(const M &obj) const;
 		M operator*(const double &obj) const noexcept;
+
+		M operator*=(const M &obj);
+		M operator*=(const double &obj) noexcept;
+
+		M operator/(const M &obj) const;
+		M operator/(const double &obj) const noexcept;
 
 		M operator-() const noexcept;
 
 		M operator-(const M &obj) const noexcept;
 		M operator-(const double &obj) const noexcept;
+
+		M &operator-=(const M &obj) noexcept;
+		M &operator-=(const double &obj) noexcept;
 
 		bool operator==(const M &other) const noexcept;
 		bool operator==(const double &other) const noexcept;

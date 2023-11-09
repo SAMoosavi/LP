@@ -10,10 +10,10 @@ using namespace std;
 int main() {
 	//	auto input = InputLP();
 	//	LP lp = input.input();
-	LP lp(3, 2, LP::TypeOfOptimization::max, {0, -1, 1}, {{1, -1, 1},
-	                                                     {2, -2, 0}}, {1, -2},
-		{LP::Comparative::lower, LP::Comparative::equal},
-		{LP::Sign::negative, LP::Sign::positive, LP::Sign::freeSign});
+	LP lp(5, 2, LP::TypeOfOptimization::max, {5, 2, 3, -1, 1}, {{1, 2, 2, 1, 0},
+	                                                            {3, 4, 1, 0, 1}}, {8, 7},
+		{LP::Comparative::equal, LP::Comparative::equal},
+		{LP::Sign::positive, LP::Sign::positive, LP::Sign::positive, LP::Sign::positive, LP::Sign::positive});
 
 	bool dual;
 	//	cout << ColoredString::white("Please input your work:")

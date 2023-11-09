@@ -300,18 +300,100 @@ T operator*(const vector<T>& a, const vector<T>& b){
 	return r;
 }
 
+LP::TableType Transpose(const LP::TableType &table) {
+	LP::TableType r(table[0].size(), LP::RowOfTable(table.size()));
+	for(int i = 0; i < table.size(); ++i)
+		for(int j = 0; j < table[i].size(); ++j)
+			r[j][i] = table[i][j];
+	return r;
+}
+
+template<typename T>
+ssize_t max(const vector<T> &a) {
+	ssize_t max_index = -1;
+	T max_val = 0;
+	for(ssize_t i = 0; i < a.size(); ++i) {
+		if(a[i] > max_val) {
+			max_val = a[i];
+			max_index = i;
+		}
+	}
+	return max_index;
+}
+
+template<typename T>
+ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
+	ssize_t min_index = -1;
+	T min_val = -1;
+	for(ssize_t i = 0; i < column.size(); ++i) {
+		if(column[i] > 0) {
+			if(min_val == -1) {
+				min_val = rhs[i] / column[i];
+				min_index = i;
+			} else if(rhs[i] / column[i] < min_val) {
+				min_val = rhs[i] / column[i];
+				min_index = i;
+			}
+		}
+	}
+	return min_index;
+}
+
 void Simplex::ans() {
-	for(const auto &row:lp.get_table()) {
-		for(int i = number_of_x; i < row.size(); ++i) {
-			if(row[i] == 1){
+	auto table =  lp.get_table();
+	for(const auto &row: table) {
+		for(size_t i = number_of_x; i < row.size(); ++i) {
+			if(row[i] == 1) {
 				cj.push_back(i);
 				cb.push_back(lp.z_at(i));
 			}
 		}
 	}
+
 	z_bar = cb * lp.get_rhs();
-//	for(int i = 0; i < ; ++i) {
-//
-//	}
-//	c_bar.push_back()
+	auto t_table = Transpose(table);
+	for(size_t i = 0; i < t_table.size(); ++i)
+		c_bar.push_back(lp.z_at(i) - cb * t_table[i]);
+
+	auto rhs = lp.get_rhs();
+	ssize_t new_base_column_index = max(c_bar);
+	ssize_t new_base_row_index = min_test(t_table[new_base_column_index], rhs);
+	while(new_base_column_index > -1 && new_base_row_index > -1) {
+		LP::M a = LP::M(1) / t_table[new_base_column_index][new_base_row_index];
+		for(auto &cell: table[new_base_row_index])
+			cell *= a;
+
+		rhs[new_base_column_index] *= a;
+
+		cj[new_base_row_index] = new_base_column_index;
+		cb[new_base_row_index] = lp.z_at(new_base_column_index);
+
+		auto &new_base_row = table[new_base_row_index];
+		for(size_t row_index = 0; row_index < table.size(); ++row_index) {
+			auto &t = table[row_index];
+			if(t == new_base_row)
+				continue;
+
+			a = t[new_base_column_index] / new_base_row[new_base_column_index];
+			for(int i = 0; i < t.size(); ++i)
+				t[i] -= a * new_base_row[i];
+
+			rhs[row_index] -= a * rhs[new_base_column_index];
+		}
+
+		a = c_bar[new_base_column_index] / new_base_row[new_base_column_index];
+		for(int i = 0; i < c_bar.size(); ++i)
+			c_bar[i] -= a * new_base_row[i];
+
+		auto last_z_bar = z_bar;
+		z_bar -= a * rhs[new_base_column_index];
+//		if(z_bar == last_z_bar)
+//			break;
+
+		t_table = Transpose(table);
+		new_base_column_index = max(cb);
+		new_base_row_index = min_test(t_table[new_base_column_index], rhs);
+		lp.set_rhs(rhs);
+		lp.set_table(table);
+	}
 }
