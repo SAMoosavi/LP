@@ -315,7 +315,7 @@ bool LP::M::operator<=(const double &other) const noexcept {
 }
 
 LP::M::operator string() const noexcept {
-	string s = "(";
+	string s;
 	const auto to_string = [](const double &d) -> string {
 		string num_text = std::to_string(d);
 		auto r =  num_text.substr(0, num_text.find('.') + 3);
@@ -330,22 +330,17 @@ LP::M::operator string() const noexcept {
 		return r;
 	};
 
-	if(inf != 0) {
-		if(inf > 0)
-			s += "+";
+	if(inf != 0)
 		s += to_string(inf) + "M";
-	}
 
 	if(num != 0) {
-		if(num > 0)
+		if(num > 0 && inf != 0)
 			s += "+";
 		s += to_string(num);
 	}
 
-	if(s.size() == 1)
+	if(s.empty())
 		s += std::to_string(0);
-
-	s += ")";
 	return s;
 }
 
