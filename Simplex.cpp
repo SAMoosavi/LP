@@ -7,116 +7,12 @@
 
 using namespace std;
 
-/// This changes polynomial to string.
-template<typename T>
-string to_string(const string &varname, const vector<T> &arr, size_t n, bool show_empty,
-	const vector<size_t> &max_num_len) {
-	const string VAR = varname + "_";
-	size_t MAX_LEN_OF_VAR = (std::to_string(n) + VAR).size();
-	string r;
-	bool exits_before = false;
-
-	// if coefficient of a variable is zero should call this function. this calculates number of space.
-	auto generate_empty = [MAX_LEN_OF_VAR, show_empty, max_num_len](size_t colum_index) -> string {
-		// if show_empty equals to false doesn't need to calculate space
-		if(!show_empty)
-			return "";
-		string r;
-		int operator_size = 2;
-		if(colum_index == 0)
-			operator_size = 0;
-		for(size_t i = 0; i < MAX_LEN_OF_VAR + max_num_len[colum_index] + operator_size; ++i)
-			r += " ";
-		return r;
-	};
-
-	// This calculates number of space needed to before of variable.
-	auto generate_space = [](const string &s, size_t max_num_len) {
-		string r;
-		if(max_num_len > s.size())
-			for(size_t i = 0; i < max_num_len - s.size(); ++i)
-				r += " ";
-		return r;
-	};
-
-	for(size_t i = 0; i < n; ++i) {
-		if(arr[i] == 0)
-			r += generate_empty(i);
-		else {
-			if(arr[i] > 0) {
-				if(exits_before)
-					r += " +";
-				else if(i != 0)
-					r += "  ";
-			} else if(arr[i] < 0) {
-				if(exits_before)
-					r += " ";
-			}
-			string num_str = LP::to_string(arr[i]);
-			r += generate_space(num_str, max_num_len[i]);
-			r += num_str;
-			r += VAR + std::to_string(i + 1);
-			exits_before = true;
-		}
-	}
-	return r;
-}
-
-/**
-  * this function calculates maximum length in column.
-  * @return list of maximum length in each column.
-  */
-vector<size_t> max2DVec(const LP::TableType &v) {
-	vector<size_t> m(v[0].size(), 0);
-	for(const auto &b: v) {
-		for(size_t i = 0; i < b.size(); ++i) {
-			auto s = LP::to_string(b[i]).size();
-			if(s > m[i])
-				m[i] = s;
-		}
-	}
-	return m;
-}
-
-/// this function prints the LP
-void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization, const LP::ZType &z,
-	size_t number_of_line, const LP::TableType &table, LP::ComparativesType comparatives,
-	const LP::RHSesType &rhSes, LP::SignsType signs) {
-	// Z
-	cout << ColoredString::magenta(LP::to_string(type_of_optimization)) << " "
-	     << ColoredString::red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0)))
-	     << endl;
-
-	// S.Transpose.
-	for(int i = 0; i < number_of_line; ++i)
-		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
-		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
-		     << ColoredString::yellow(LP::to_string(rhSes[i]))
-		     << endl;
-
-	// Signs of variables
-	map<LP::Sign, vector<size_t>> sign;
-	for(size_t i = 0; i < number_of_x; i++)
-		sign[signs[i]].emplace_back(i);
-
-	const string VAR = varname + "_";
-
-	for(const auto &s1: sign) {
-		string s;
-		for(const auto &s2: s1.second)
-			s += VAR + to_string(s2 + 1) + ", ";
-		s.pop_back();
-		s.pop_back();
-		cout << ColoredString::magenta(s) << " " << ColoredString::magenta(LP::to_string(s1.first)) << endl;
-	}
-}
-
-
 Simplex::Simplex(LP last_lp) {
 	creat_std_lp(last_lp);
 	made_base();
 	ans();
 	print_table();
+	print_ans();
 }
 
 void Simplex::creat_std_lp(const LP &last_lp) {
@@ -683,6 +579,36 @@ void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
 		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::bottomRight);
+
+}
+
+void Simplex::print_ans() {
+	for(const auto &index: cj) {
+		if(index >= number_of_x + number_of_s) {
+			cout << ColoredString::blue("this LP is not possible answer!");
+			return;
+		}
+	}
+	for(const auto &num: c_bar) {
+		if(lp.get_type_of_optimization() == LP::TypeOfOptimization::max && num > 0) {
+			cout << ColoredString::blue("the answer of LP is positive infinite!");
+			return;
+		} else if(lp.get_type_of_optimization() == LP::TypeOfOptimization::min && num < 0) {
+			cout << ColoredString::blue("the answer of LP is negative infinite!");
+			return;
+		}
+	}
+	size_t number_of_zero = 0;
+	for(size_t i = 0; i < number_of_x + number_of_s;i++) {
+		if(c_bar[i] == 0) ++number_of_zero;
+	}
+
+	if(number_of_zero > lp.get_number_of_line()){
+		cout << ColoredString::blue("this has multi answers! one of answers is:\n");
+	}
+		for(size_t i = 0; i < cj.size();i++){
+			cout << name_of_var(i) << " = " << LP::to_string(cb[i]) << endl;
+		}
 
 }
 

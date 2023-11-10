@@ -77,8 +77,9 @@ private:
 
 	void put_specific_char(string& str,size_t number_of_char,const string& specific_char = " ") const noexcept;
 
-
 	void print_table();
+
+	void print_ans();
 
 	LP lp;
 	Transformers transformers;
