@@ -336,6 +336,19 @@ ssize_t max(const vector<T> &a) {
 }
 
 template<typename T>
+ssize_t min(const vector<T> &a) {
+	ssize_t min_index = -1;
+	T min_val = 0;
+	for(ssize_t i = 0; i < a.size(); ++i) {
+		if(a[i] < min_val) {
+			min_val = a[i];
+			min_index = i;
+		}
+	}
+	return min_index;
+}
+
+template<typename T>
 ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
 	ssize_t min_index = -1;
 	T min_val = -1;
@@ -370,7 +383,8 @@ void Simplex::ans() {
 		c_bar.push_back(lp.z_at(i) - cb * t_table[i]);
 
 	auto rhs = lp.get_rhs();
-	ssize_t new_base_column_index = max(c_bar);
+	ssize_t new_base_column_index =
+		lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
 	ssize_t new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 	while(new_base_column_index > -1 && new_base_row_index > -1) {
 		print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
@@ -422,7 +436,7 @@ void Simplex::ans() {
 			break;
 
 		t_table = Transpose(table);
-		new_base_column_index = max(c_bar);
+		new_base_column_index = lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
 		if(new_base_column_index > -1)
 			new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 		lp.set_rhs(rhs);
