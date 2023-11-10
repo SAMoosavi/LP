@@ -12,7 +12,7 @@ int main() {
 	//	LP lp = input.input();
 	LP lp(5, 2, LP::TypeOfOptimization::max, {5, 2, 3, -1, 1}, {{1, 2, 2, 1, 0},
 	                                                            {3, 4, 1, 0, 1}}, {8, 7},
-		{LP::Comparative::equal, LP::Comparative::equal},
+		{LP::Comparative::lower, LP::Comparative::greater},
 		{LP::Sign::positive, LP::Sign::positive, LP::Sign::positive, LP::Sign::positive, LP::Sign::positive});
 
 	bool dual;
