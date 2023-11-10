@@ -128,23 +128,7 @@ Simplex::Simplex(LP last_lp) {
 		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
 
 	ans();
-
-	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
-	cout << "cb: ";
-	for(auto x:cb)
-		cout << LP::to_string(x) << " ";
-	cout << endl;
-	cout << "cj: ";
-	for(auto x:cj)
-		cout << LP::to_string(x) << " ";
-	cout << endl;
-	cout << "c_bar: ";
-	for(auto x:c_bar)
-		cout << LP::to_string(x) << " ";
-	cout << endl;
-	cout<< "z_bar: " << LP::to_string(z_bar) << endl;
-	cout << "-----------------------------------------------------------"<<endl;
+print_table();
 }
 
 void Simplex::creat_std_lp(const LP &last_lp) {
