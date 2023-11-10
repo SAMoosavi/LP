@@ -342,8 +342,8 @@ LP::M::operator string() const noexcept {
 		s += to_string(num);
 	}
 
-	if(s.empty())
-		s = to_string(0);
+	if(s.size() == 1)
+		s += std::to_string(0);
 
 	s += ")";
 	return s;
