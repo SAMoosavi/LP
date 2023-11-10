@@ -132,6 +132,8 @@ print_table();
 }
 
 void Simplex::creat_std_lp(const LP &last_lp) {
+	lp.set_type_of_optimization(last_lp.get_type_of_optimization());
+
 	size_t number_of_free_var = 0;
 	for(auto &sign: last_lp.get_signs())
 		number_of_free_var += (sign == LP::Sign::freeSign);
