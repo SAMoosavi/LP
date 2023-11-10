@@ -113,20 +113,20 @@ void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization typ
 
 
 Simplex::Simplex(LP last_lp) {
-	print("x", last_lp.get_number_of_x(), last_lp.get_type_of_optimization(), last_lp.get_z(),
-		last_lp.get_number_of_line(), last_lp.get_table(), last_lp.get_comparatives(), last_lp.get_rhs(),
-		last_lp.get_signs());
+//	print("x", last_lp.get_number_of_x(), last_lp.get_type_of_optimization(), last_lp.get_z(),
+//		last_lp.get_number_of_line(), last_lp.get_table(), last_lp.get_comparatives(), last_lp.get_rhs(),
+//		last_lp.get_signs());
 
 	creat_std_lp(last_lp);
 
-	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+//	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
+//		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
 
 	made_base();
 
-	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
-
+//	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
+//		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+//
 	ans();
 print_table();
 }
@@ -230,11 +230,9 @@ void Simplex::made_base() {
 	number_of_r = 0;
 	LP::M m;
 	switch(lp.get_type_of_optimization()) {
-		case LP::min:
-			m = LP::M(1, 0);
+		case LP::min: m = LP::M(1, 0);
 			break;
-		case LP::max:
-			m = LP::M(-1, 0);
+		case LP::max: m = LP::M(-1, 0);
 			break;
 	}
 
@@ -417,9 +415,9 @@ string Simplex::name_of_var(const size_t &index_of_var) const noexcept {
 	if(index_of_var < number_of_x)
 		return "X" + std::to_string(index_of_var + 1);
 	else if(index_of_var < number_of_x + number_of_s)
-		return "S" + std::to_string(index_of_var - number_of_x);
+		return "S" + std::to_string(index_of_var - number_of_x + 1);
 	else if(index_of_var < number_of_x + number_of_s + number_of_r)
-		return "S" + std::to_string(index_of_var - (number_of_x + number_of_s) + 1);
+		return "R" + std::to_string(index_of_var - (number_of_x + number_of_s) + 1);
 	else
 		return "NaN";
 }
@@ -448,9 +446,9 @@ void Simplex::print_table() {
 
 	set_last_base_table_for_print(row_for_print);
 	set_last_column_table_for_print(table,row_for_print);
-	for(auto& a:row_for_print   ) {
-cout << a << endl;
-	}
+
+	for(auto &row: row_for_print)
+		cout << row << endl;
 }
 
 void Simplex::generate_first_row_of_table_for_print(PrintTable &table) const noexcept {
