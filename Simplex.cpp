@@ -280,12 +280,12 @@ void Simplex::made_base() {
 	new_lp.set_z(z);
 	LP::TableType new_table = new_lp.get_table();
 	LP::TableType last_table = lp.get_table();
-	for(int i = 0; i < last_table.size() ; ++i)
+	for(int i = 0; i < last_table.size(); ++i)
 		for(int j = 0; j < last_table[i].size(); ++j)
 			new_table[i][j] = last_table[i][j];
 
 	size_t index_of_r = 0;
-	for(int i = 0; i <new_table.size(); ++i) {
+	for(int i = 0; i < new_table.size(); ++i) {
 		bool exists_one = false;
 		for(int j = number_of_x; j < new_table[i].size(); ++j) {
 			if(new_table[i][j] == 1) {
@@ -303,7 +303,7 @@ void Simplex::made_base() {
 }
 
 template<typename T>
-T operator*(const vector<T>& a, const vector<T>& b){
+T operator*(const vector<T> &a, const vector<T> &b) {
 	if(a.size() != b.size())
 		throw std::runtime_error(ColoredString::red("length of a and b must be equal"));
 
@@ -367,7 +367,7 @@ ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
 }
 
 void Simplex::ans() {
-	auto table =  lp.get_table();
+	auto table = lp.get_table();
 	for(const auto &row: table) {
 		for(size_t i = number_of_x; i < row.size(); ++i) {
 			if(row[i] == 1) {
@@ -387,22 +387,7 @@ void Simplex::ans() {
 		lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
 	ssize_t new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 	while(new_base_column_index > -1 && new_base_row_index > -1) {
-		print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-			lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
-		cout << "cb: ";
-		for(auto x:cb)
-			cout << LP::to_string(x) << " ";
-		cout << endl;
-		cout << "cj: ";
-		for(auto x:cj)
-			cout << LP::to_string(x) << " ";
-		cout << endl;
-		cout << "c_bar: ";
-		for(auto x:c_bar)
-			cout << LP::to_string(x) << " ";
-		cout << endl;
-		cout<< "z_bar: " << LP::to_string(z_bar) << endl;
-		cout << "-----------------------------------------------------------"<<endl;
+		print_table();
 
 		LP::M a = LP::M(1) / table[new_base_row_index][new_base_column_index];
 		for(auto &cell: table[new_base_row_index])
@@ -443,3 +428,287 @@ void Simplex::ans() {
 		lp.set_table(table);
 	}
 }
+
+string Simplex::name_of_var(const size_t &index_of_var) const noexcept {
+	if(index_of_var < number_of_x)
+		return "X" + std::to_string(index_of_var + 1);
+	else if(index_of_var < number_of_x + number_of_s)
+		return "S" + std::to_string(index_of_var - number_of_x);
+	else if(index_of_var < number_of_x + number_of_s + number_of_r)
+		return "S" + std::to_string(index_of_var - (number_of_x + number_of_s) + 1);
+	else
+		return "NaN";
+}
+
+void Simplex::print_table() {
+	const size_t NUMBER_OF_ROW = 4 + lp.get_number_of_line();
+	const size_t NUMBER_OF_COLUMN = 3 + lp.get_number_of_x();
+	PrintTable table(NUMBER_OF_ROW, PrintRow(NUMBER_OF_COLUMN, ""));
+	generate_first_row_of_table_for_print(table);
+	generate_second_row_of_table_for_print(table);
+	generate_thread_row_of_table_for_print(table);
+	generate_base_of_table_for_print(table);
+	generate_last_row_of_table_for_print(table);
+
+	size_t NUMBER_OF_LINE_PRINT = NUMBER_OF_ROW + 4;
+	PrintRow row_for_print(NUMBER_OF_LINE_PRINT, "");
+	set_start_table_for_print(row_for_print);
+	size_t size_first_column = set_first_and_second_column_for_print(table, row_for_print, 0);
+	size_t size_second_column = set_first_and_second_column_for_print(table, row_for_print, 1);
+
+	row_for_print[NUMBER_OF_LINE_PRINT-2] += print_string_column(table.back()[0],size_first_column+size_second_column+3);
+	row_for_print[NUMBER_OF_LINE_PRINT-2] += PRINT_VERTICAL;
+
+	for(int i = 2; i < lp.get_number_of_x()+2; ++i)
+		set_base_column_for_print(table, row_for_print, i);
+
+	set_last_base_table_for_print(row_for_print);
+	set_last_column_table_for_print(table,row_for_print);
+	for(auto& a:row_for_print   ) {
+cout << a << endl;
+	}
+}
+
+void Simplex::generate_first_row_of_table_for_print(PrintTable &table) const noexcept {
+	auto &first_row = table[0];
+	for(int i = 2; i < first_row.size() - 1; ++i)
+		first_row[i] = lp.z_at(i - 2);
+}
+
+void Simplex::generate_second_row_of_table_for_print(PrintTable &table) const noexcept {
+
+	auto &second_row = table[1];
+	second_row[0] = "Cb";
+	second_row[1] = "Cj";
+	second_row.back() = "RHS";
+}
+
+void Simplex::generate_thread_row_of_table_for_print(PrintTable &table) const noexcept {
+	auto &thread_row = table[2];
+	for(size_t index_of_var = 0; index_of_var < number_of_x + number_of_s + number_of_r; ++index_of_var)
+		thread_row[index_of_var + 2] = name_of_var(index_of_var);
+}
+
+void Simplex::generate_base_of_table_for_print(PrintTable &table) const noexcept {
+	for(size_t index_row_of_base = 0; index_row_of_base < lp.get_number_of_line(); ++index_row_of_base) {
+		auto &row_of_base = table[index_row_of_base + 3];
+		row_of_base[0] = cb[index_row_of_base];
+		row_of_base[1] = name_of_var(cj[index_row_of_base]);
+
+		for(size_t index_column_of_base_table = 0;
+			index_column_of_base_table < lp.get_number_of_x(); ++index_column_of_base_table)
+			row_of_base[index_column_of_base_table + 2] = lp.table_at(index_row_of_base, index_column_of_base_table);
+
+		row_of_base.back() = lp.rhs_at(index_row_of_base);
+	}
+}
+
+void Simplex::generate_last_row_of_table_for_print(PrintTable &table) const noexcept {
+	auto &last_row = table.back();
+	last_row[0] = "C_bar";
+	for(int index_of_c_br = 0; index_of_c_br < c_bar.size(); ++index_of_c_br)
+		last_row[index_of_c_br + 2] = c_bar[index_of_c_br];
+	last_row.back() = z_bar;
+}
+
+size_t Simplex::size_of_the_biggest_string_in_column_of_table_for_print(const Simplex::PrintTable &table,
+	size_t number_of_column) const noexcept {
+	size_t max_size = 0;
+	for(const PrintRow &row: table) {
+		size_t size_of_string = row[number_of_column].size();
+		if(max_size < size_of_string)
+			max_size = size_of_string;
+	}
+	return max_size;
+}
+
+void Simplex::set_start_table_for_print(Simplex::PrintRow &row_for_print) const noexcept {
+	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
+	for(size_t i = 0; i < NUMBER_OF_LINE_PRINT; ++i) {
+		if(i == 0) {
+			row_for_print[i] = BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::topLeft);
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		} else if(i == 4 || i == (NUMBER_OF_LINE_PRINT - 3)) {
+			row_for_print[i] = BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalRight);
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		} else if(i == NUMBER_OF_LINE_PRINT - 1) {
+			row_for_print[i] = BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::bottomLeft);
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		} else {
+			row_for_print[i] = BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::vertical);
+			row_for_print[i] += " ";
+		}
+	}
+}
+
+string Simplex::print_string_column(const string &s, const size_t &size_of_result_string) const noexcept {
+	size_t size_of_str = s.size();
+	if(size_of_result_string < size_of_str)
+		return s;
+	size_t diff_size = size_of_result_string - size_of_str;
+	size_t first_space_size = diff_size / 2, last_space_size = (diff_size + 1) / 2;
+	string r;
+	put_specific_char(r, first_space_size);
+	r += s;
+	put_specific_char(r, last_space_size);
+	return r;
+}
+
+void Simplex::put_specific_char(string &str, size_t number_of_space, const string &specific_char) const noexcept {
+	for(int i = 0; i < number_of_space; ++i)
+		str += specific_char;
+}
+
+size_t Simplex::set_first_and_second_column_for_print(const Simplex::PrintTable &table,
+	Simplex::PrintRow &row_for_print, size_t index_col) const noexcept {
+	const size_t max_size = size_of_the_biggest_string_in_column_of_table_for_print(table, index_col);
+	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
+
+	put_specific_char(row_for_print[0], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[0] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[0] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalUp);
+	row_for_print[0] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	put_specific_char(row_for_print[1], max_size);
+	row_for_print[1] += PRINT_VERTICAL;
+
+	row_for_print[2] += print_string_column(table[1][index_col], max_size);
+	if(index_col == 0)
+		row_for_print[2] += PRINT_VERTICAL;
+	else
+		row_for_print[2] += " " + BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalRight) +
+		                    BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	put_specific_char(row_for_print[3], max_size);
+	row_for_print[3] += PRINT_VERTICAL;
+
+	put_specific_char(row_for_print[4], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[4] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[4] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalAndVertical);
+	row_for_print[4] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	for(size_t i = 0; i < lp.get_number_of_line(); ++i) {
+		row_for_print[i + 5] += print_string_column(table[i + 3][index_col], max_size);
+		row_for_print[i + 5] += PRINT_VERTICAL;
+	}
+
+	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 3)], max_size,
+		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(
+		index_col == 1? TypeOfBoxDrawing::horizontalAndVertical: TypeOfBoxDrawing::horizontalDown);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
+		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(
+		index_col == 1? TypeOfBoxDrawing::horizontalDown: TypeOfBoxDrawing::horizontal);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	return max_size;
+}
+
+void Simplex::set_base_column_for_print(const Simplex::PrintTable &table, Simplex::PrintRow &row_for_print,
+	size_t index_col) const noexcept {
+	const size_t max_size = size_of_the_biggest_string_in_column_of_table_for_print(table, index_col);
+	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
+
+	put_specific_char(row_for_print[0], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[0] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	row_for_print[1] += print_string_column(table[0][index_col], max_size);
+	row_for_print[1] += " ";
+
+	put_specific_char(row_for_print[2], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[2] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	row_for_print[3] += print_string_column(table[2][index_col], max_size);
+	row_for_print[3] += " ";
+
+	put_specific_char(row_for_print[4], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[4] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	for(size_t i = 0; i < lp.get_number_of_line(); ++i) {
+		row_for_print[i + 5] += print_string_column(table[i + 3][index_col], max_size);
+		row_for_print[i + 5] += " ";
+	}
+
+	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 3)], max_size,
+		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+
+	row_for_print[(NUMBER_OF_LINE_PRINT - 2)] += print_string_column(table.back()[index_col], max_size);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 2)] += " ";
+
+	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
+		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+}
+
+void Simplex::set_last_base_table_for_print(Simplex::PrintRow &row_for_print) const noexcept {
+	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
+	for(size_t i = 0; i < NUMBER_OF_LINE_PRINT; ++i) {
+		if(i == 0) {
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalUp);
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		}else if(i == 2 ) {
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalLeft);
+			row_for_print[i] += " ";
+		} else if(i == 4 || i == (NUMBER_OF_LINE_PRINT - 3)) {
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalAndVertical);
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		} else if(i == NUMBER_OF_LINE_PRINT - 1) {
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalDown);
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		} else {
+			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::vertical);
+			row_for_print[i] += " ";
+		}
+	}
+}
+
+void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
+	Simplex::PrintRow &row_for_print) const noexcept {
+	const size_t index_col = table[0].size() - 1;
+	const size_t max_size = size_of_the_biggest_string_in_column_of_table_for_print(table, index_col);
+	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
+
+	put_specific_char(row_for_print[0], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[0] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[0] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::topRight);
+
+	put_specific_char(row_for_print[1], max_size);
+	row_for_print[1] += PRINT_VERTICAL;
+
+	row_for_print[2] += print_string_column(table[1][index_col], max_size);
+		row_for_print[2] += PRINT_VERTICAL;
+
+	put_specific_char(row_for_print[3], max_size);
+	row_for_print[3] += PRINT_VERTICAL;
+
+	put_specific_char(row_for_print[4], max_size, BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[4] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[4] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalLeft);
+
+	for(size_t i = 0; i < lp.get_number_of_line(); ++i) {
+		row_for_print[i + 5] += print_string_column(table[i + 3][index_col], max_size);
+		row_for_print[i + 5] += PRINT_VERTICAL;
+	}
+
+	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 3)], max_size,
+		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(horizontalLeft);
+
+	row_for_print[NUMBER_OF_LINE_PRINT-2] += print_string_column(table.back()[index_col],max_size);
+	row_for_print[NUMBER_OF_LINE_PRINT-2] += PRINT_VERTICAL;
+
+	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
+		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::bottomRight);
+
+}
+
+
