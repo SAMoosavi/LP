@@ -113,22 +113,10 @@ void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization typ
 
 
 Simplex::Simplex(LP last_lp) {
-//	print("x", last_lp.get_number_of_x(), last_lp.get_type_of_optimization(), last_lp.get_z(),
-//		last_lp.get_number_of_line(), last_lp.get_table(), last_lp.get_comparatives(), last_lp.get_rhs(),
-//		last_lp.get_signs());
-
 	creat_std_lp(last_lp);
-
-//	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-//		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
-
 	made_base();
-
-//	print("y", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(),
-//		lp.get_table(), lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
-//
 	ans();
-print_table();
+	print_table();
 }
 
 void Simplex::creat_std_lp(const LP &last_lp) {
@@ -442,14 +430,15 @@ void Simplex::print_table() {
 	size_t size_first_column = set_first_and_second_column_for_print(table, row_for_print, 0);
 	size_t size_second_column = set_first_and_second_column_for_print(table, row_for_print, 1);
 
-	row_for_print[NUMBER_OF_LINE_PRINT-2] += print_string_column(table.back()[0],size_first_column+size_second_column+3);
-	row_for_print[NUMBER_OF_LINE_PRINT-2] += PRINT_VERTICAL;
+	row_for_print[NUMBER_OF_LINE_PRINT - 2] += print_string_column(table.back()[0],
+		size_first_column + size_second_column + 3);
+	row_for_print[NUMBER_OF_LINE_PRINT - 2] += PRINT_VERTICAL;
 
-	for(int i = 2; i < lp.get_number_of_x()+2; ++i)
+	for(int i = 2; i < lp.get_number_of_x() + 2; ++i)
 		set_base_column_for_print(table, row_for_print, i);
 
 	set_last_base_table_for_print(row_for_print);
-	set_last_column_table_for_print(table,row_for_print);
+	set_last_column_table_for_print(table, row_for_print);
 
 	for(auto &row: row_for_print)
 		cout << row << endl;
@@ -638,7 +627,7 @@ void Simplex::set_last_base_table_for_print(Simplex::PrintRow &row_for_print) co
 		if(i == 0) {
 			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalUp);
 			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
-		}else if(i == 2 ) {
+		} else if(i == 2) {
 			row_for_print[i] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalLeft);
 			row_for_print[i] += " ";
 		} else if(i == 4 || i == (NUMBER_OF_LINE_PRINT - 3)) {
@@ -668,7 +657,7 @@ void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
 	row_for_print[1] += PRINT_VERTICAL;
 
 	row_for_print[2] += print_string_column(table[1][index_col], max_size);
-		row_for_print[2] += PRINT_VERTICAL;
+	row_for_print[2] += PRINT_VERTICAL;
 
 	put_specific_char(row_for_print[3], max_size);
 	row_for_print[3] += PRINT_VERTICAL;
@@ -687,8 +676,8 @@ void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(horizontalLeft);
 
-	row_for_print[NUMBER_OF_LINE_PRINT-2] += print_string_column(table.back()[index_col],max_size);
-	row_for_print[NUMBER_OF_LINE_PRINT-2] += PRINT_VERTICAL;
+	row_for_print[NUMBER_OF_LINE_PRINT - 2] += print_string_column(table.back()[index_col], max_size);
+	row_for_print[NUMBER_OF_LINE_PRINT - 2] += PRINT_VERTICAL;
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
 		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
