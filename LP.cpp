@@ -37,25 +37,25 @@ string LP::to_string(LP::M m) noexcept {
 }
 
 LP::LP()
-: number_of_x(0)
-, number_of_line(0)
-, type_of_optimization(TypeOfOptimization::max)
-, z()
-, table()
-, b()
-, comparatives()
-, signs() {}
+	: number_of_x(0)
+	, number_of_line(0)
+	, type_of_optimization(TypeOfOptimization::max)
+	, z()
+	, table()
+	, b()
+	, comparatives()
+	, signs() {}
 
 LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
 	TableType table, RHSesType b, ComparativesType comparatives, SignsType signs)
-: number_of_x(number_of_x)
-, number_of_line(number_of_line)
-, type_of_optimization(type_of_optimization)
-, z(std::move(z))
-, table(std::move(table))
-, b(std::move(b))
-, comparatives(std::move(comparatives))
-, signs(std::move(signs)) {
+	: number_of_x(number_of_x)
+	, number_of_line(number_of_line)
+	, type_of_optimization(type_of_optimization)
+	, z(std::move(z))
+	, table(std::move(table))
+	, b(std::move(b))
+	, comparatives(std::move(comparatives))
+	, signs(std::move(signs)) {
 	validate_z();
 	validate_b();
 	validate_table();
@@ -194,25 +194,25 @@ void LP::set_signs(const LP::SignsType &s) {
 
 
 LP::M::M()
-: inf(0)
-, num(0) {}
+	: inf(0)
+	, num(0) {}
 
 LP::M::M(double num)
-: inf(0)
-, num(num) {}
+	: inf(0)
+	, num(num) {}
 
 LP::M::M(double inf, double num)
-: inf(inf)
-, num(num) {}
+	: inf(inf)
+	, num(num) {}
 
 
 LP::M::M(const LP::M &other)
-: inf(other.inf)
-, num(other.num) {}
+	: inf(other.inf)
+	, num(other.num) {}
 
 LP::M::M(LP::M &&other) noexcept
-: inf(other.inf)
-, num(other.num) {}
+	: inf(other.inf)
+	, num(other.num) {}
 
 LP::M &LP::M::operator=(const double &other) {
 	inf = 0;
@@ -315,23 +315,37 @@ bool LP::M::operator<=(const double &other) const noexcept {
 }
 
 LP::M::operator string() const noexcept {
-	string s;
-	const auto to_string = [](const double &d) {
+	string s = "(";
+	const auto to_string = [](const double &d) -> string {
 		string num_text = std::to_string(d);
-		return num_text.substr(0, num_text.find('.') + 3);
+		auto r =  num_text.substr(0, num_text.find('.') + 3);
+		while(r.back() != '.'){
+			if(r.back() == '0')
+				r.pop_back();
+			else
+				break;
+		}
+		if(r.back() == '.')
+			r.pop_back();
+		return r;
 	};
 
-	if(inf != 0)
+	if(inf != 0) {
+		if(inf > 0)
+			s += "+";
 		s += to_string(inf) + "M";
-	if(inf != 0 && num != 0)
-		s += " ";
-	if(num != 0)
+	}
+
+	if(num != 0) {
+		if(num > 0)
+			s += "+";
 		s += to_string(num);
-	if(inf != 0 && num != 0)
-		s = "(" + s + ")";
+	}
+
 	if(s.empty())
 		s = to_string(0);
 
+	s += ")";
 	return s;
 }
 
@@ -345,7 +359,7 @@ LP::M LP::M::operator*(const LP::M &obj) const {
 }
 
 LP::M LP::M::operator*(const double &obj) const noexcept {
-	return {inf * obj,num * obj};
+	return {inf * obj, num * obj};
 }
 
 LP::M LP::M::operator*=(const LP::M &obj) {
@@ -366,5 +380,5 @@ LP::M LP::M::operator/(const LP::M &obj) const {
 }
 
 LP::M LP::M::operator/(const double &obj) const noexcept {
-	return {inf / obj,num / obj};
+	return {inf / obj, num / obj};
 }
