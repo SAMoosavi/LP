@@ -232,9 +232,11 @@ void Simplex::made_base() {
 	number_of_r = 0;
 	LP::M m;
 	switch(lp.get_type_of_optimization()) {
-		case LP::min: m = LP::M(1, 0);
+		case LP::min:
+			m = LP::M(1, 0);
 			break;
-		case LP::max: m = LP::M(-1, 0);
+		case LP::max:
+			m = LP::M(-1, 0);
 			break;
 	}
 
