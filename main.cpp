@@ -8,19 +8,14 @@ using namespace std;
 
 
 int main() {
-	//	auto input = InputLP();
-	//	LP lp = input.input();
-	LP lp(5, 2, LP::TypeOfOptimization::max, {5, 2, 3, -1, 1}, {{1, 2, 2, 1, 0},
-	                                                            {3, 4, 1, 0, 1}}, {8, 7},
-		{LP::Comparative::lower, LP::Comparative::greater},
-		{LP::Sign::positive, LP::Sign::positive, LP::Sign::positive, LP::Sign::positive, LP::Sign::positive});
+	auto input = InputLP();
+	LP lp = input.input();
 
 	bool dual;
-	//	cout << ColoredString::white("Please input your work:")
-	//	     << ColoredString::red("(dual enter 1 nad simplex enter 0)")
-	//	     << endl;
-	//	cin >> dual;
-	dual = false;
+	cout << ColoredString::white("Please input your work:")
+	     << ColoredString::red("(dual enter 1 nad simplex enter 0)")
+	     << endl;
+	cin >> dual;
 	if(dual) {
 		Dual d(lp);
 	} else {
