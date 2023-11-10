@@ -1,20 +1,5 @@
 #include "ColoredString.h"
 
-string ColoredString::red(const string & s) noexcept {return s;}
-
-string ColoredString::green(const string & s) noexcept {return s;}
-
-string ColoredString::yellow(const string & s) noexcept {return s;}
-
-string ColoredString::blue(const string & s) noexcept {return s;}
-
-string ColoredString::magenta(const string & s) noexcept {return s;}
-
-string ColoredString::white(const string & s) noexcept {return s;}
-
-
-/*
-
 string ColoredString::red(const string & s) noexcept {return "\033[1;31m" + s + "\033[0m";}
 
 string ColoredString::green(const string & s) noexcept {return "\033[1;32m" + s + "\033[0m";}
@@ -26,6 +11,3 @@ string ColoredString::blue(const string & s) noexcept {return "\033[1;34m" + s +
 string ColoredString::magenta(const string & s) noexcept {return "\033[1;35m" + s + "\033[0m";}
 
 string ColoredString::white(const string & s) noexcept {return "\033[1;37m" + s + "\033[0m";}
-
-
-*/
