@@ -12,13 +12,12 @@ Simplex::Simplex(LP last_lp) {
 	made_base();
 	if(number_of_r > 0) {
 		bool big_m = false;
-//		cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
-//		cin >> big_m;
+		//		cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
+		//		cin >> big_m;
 		if(big_m) {
 			ans();
 			print_table();
-		}
-		else {
+		} else {
 			auto last_z = lp.get_z();
 			auto last_type_of_optimization = lp.get_type_of_optimization();
 
@@ -27,22 +26,21 @@ Simplex::Simplex(LP last_lp) {
 			print_table();
 
 
-			for(const auto& index:cj){
-				if(index >= number_of_x+number_of_s )
-				{
+			for(const auto &index: cj) {
+				if(index >= number_of_x + number_of_s) {
 					cout << name_of_var(index) << " exist in base" << endl;
 					return;
 				}
 			}
 
 			auto table = lp.get_table();
-			for(auto & row : table){
+			for(auto &row: table) {
 				for(int i = 0; i < number_of_r; ++i)
 					row.pop_back();
 			}
 
 			LP new_lp;
-			new_lp.set_number_of_x(lp.get_number_of_x()-number_of_r);
+			new_lp.set_number_of_x(lp.get_number_of_x() - number_of_r);
 			new_lp.set_number_of_line(lp.get_number_of_line());
 			new_lp.set_type_of_optimization(last_type_of_optimization);
 			new_lp.set_comparatives(lp.get_comparatives());
@@ -169,11 +167,9 @@ void Simplex::made_base() {
 	number_of_r = 0;
 	LP::M m;
 	switch(lp.get_type_of_optimization()) {
-		case LP::min:
-			m = LP::M(1, 0);
+		case LP::min: m = LP::M(1, 0);
 			break;
-		case LP::max:
-			m = LP::M(-1, 0);
+		case LP::max: m = LP::M(-1, 0);
 			break;
 	}
 
@@ -228,7 +224,7 @@ void Simplex::made_base() {
 void Simplex::edit_base() {
 	lp.set_type_of_optimization(LP::TypeOfOptimization::min);
 
-	LP::ZType z(lp.get_number_of_x(),0);
+	LP::ZType z(lp.get_number_of_x(), 0);
 	auto ref_to_rs = z.rbegin();
 	for(int i = 0; i < number_of_r; ++i, ++ref_to_rs) {
 		*ref_to_rs = 1;
@@ -339,14 +335,13 @@ void Simplex::ans() {
 	}
 }
 
-string Simplex::name_of_var(const size_t &index_of_var,bool prim) const noexcept {
+string Simplex::name_of_var(const size_t &index_of_var, bool prim) const noexcept {
 	if(index_of_var < number_of_x) {
 		if(prim)
 			return "X" + std::to_string(index_of_var + 1);
 		else
 			return "X" + std::to_string(index_of_var + 1);
-	}
-	else if(index_of_var < number_of_x + number_of_s)
+	} else if(index_of_var < number_of_x + number_of_s)
 		return "S" + std::to_string(index_of_var - number_of_x + 1);
 	else if(index_of_var < number_of_x + number_of_s + number_of_r)
 		return "R" + std::to_string(index_of_var - (number_of_x + number_of_s) + 1);
