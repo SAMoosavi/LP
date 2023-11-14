@@ -10,8 +10,61 @@ using namespace std;
 Simplex::Simplex(LP last_lp) {
 	creat_std_lp(last_lp);
 	made_base();
-	ans();
-	print_table();
+	if(number_of_r > 0) {
+		bool big_m = false;
+//		cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
+//		cin >> big_m;
+		if(big_m) {
+			ans();
+			print_table();
+		}
+		else {
+			auto last_z = lp.get_z();
+			auto last_type_of_optimization = lp.get_type_of_optimization();
+
+			edit_base();
+			ans();
+			print_table();
+
+
+			for(const auto& index:cj){
+				if(index >= number_of_x+number_of_s )
+				{
+					cout << name_of_var(index) << " exist in base" << endl;
+					return;
+				}
+			}
+
+			auto table = lp.get_table();
+			for(auto & row : table){
+				for(int i = 0; i < number_of_r; ++i)
+					row.pop_back();
+			}
+
+			LP new_lp;
+			new_lp.set_number_of_x(lp.get_number_of_x()-number_of_r);
+			new_lp.set_number_of_line(lp.get_number_of_line());
+			new_lp.set_type_of_optimization(last_type_of_optimization);
+			new_lp.set_comparatives(lp.get_comparatives());
+			new_lp.set_rhs(lp.get_rhs());
+			new_lp.set_table(table);
+			auto signs = lp.get_signs();
+			for(int i = 0; i < number_of_r; ++i) {
+				last_z.pop_back();
+				signs.pop_back();
+			}
+			new_lp.set_signs(signs);
+			new_lp.set_z(last_z);
+			lp = new_lp;
+
+			ans();
+			print_table();
+
+		}
+	} else {
+		ans();
+		print_table();
+	}
 	print_ans();
 }
 
@@ -172,6 +225,17 @@ void Simplex::made_base() {
 	lp = new_lp;
 }
 
+void Simplex::edit_base() {
+	lp.set_type_of_optimization(LP::TypeOfOptimization::min);
+
+	LP::ZType z(lp.get_number_of_x(),0);
+	auto ref_to_rs = z.rbegin();
+	for(int i = 0; i < number_of_r; ++i, ++ref_to_rs) {
+		*ref_to_rs = 1;
+	}
+	lp.set_z(z);
+}
+
 template<typename T>
 T operator*(const vector<T> &a, const vector<T> &b) {
 	if(a.size() != b.size())
@@ -237,6 +301,9 @@ ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
 }
 
 void Simplex::ans() {
+	cb.clear();
+	cj.clear();
+	c_bar.clear();
 	auto table = lp.get_table();
 	for(const auto &row: table) {
 		for(size_t i = number_of_x; i < row.size(); ++i) {

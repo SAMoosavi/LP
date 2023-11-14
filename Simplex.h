@@ -54,6 +54,8 @@ private:
 
 	void made_base();
 
+	void edit_base();
+
 	void ans();
 
 	string name_of_var(const size_t &index_of_var) const noexcept;
