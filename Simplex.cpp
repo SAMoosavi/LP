@@ -339,9 +339,13 @@ void Simplex::ans() {
 	}
 }
 
-string Simplex::name_of_var(const size_t &index_of_var) const noexcept {
-	if(index_of_var < number_of_x)
-		return "X" + std::to_string(index_of_var + 1);
+string Simplex::name_of_var(const size_t &index_of_var,bool prim) const noexcept {
+	if(index_of_var < number_of_x) {
+		if(prim)
+			return "X" + std::to_string(index_of_var + 1);
+		else
+			return "X" + std::to_string(index_of_var + 1);
+	}
 	else if(index_of_var < number_of_x + number_of_s)
 		return "S" + std::to_string(index_of_var - number_of_x + 1);
 	else if(index_of_var < number_of_x + number_of_s + number_of_r)
@@ -692,7 +696,7 @@ void Simplex::print_transformers_ans() const noexcept {
 	}
 	cout << ColoredString::yellow("So answer is:") << endl;
 	for(size_t i = 0; i < transformers.size(); i++) {
-		cout << name_of_var(i) << " = " << LP::to_string(transformers[i](xs)) << endl;
+		cout << name_of_var(i, false) << " = " << LP::to_string(transformers[i](xs)) << endl;
 	}
 }
 
