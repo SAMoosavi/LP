@@ -81,6 +81,8 @@ private:
 
 	void print_ans();
 
+	LP::M calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept;
+
 	LP lp;
 	Transformers transformers;
 	size_t number_of_x;

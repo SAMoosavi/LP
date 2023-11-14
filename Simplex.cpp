@@ -259,34 +259,7 @@ void Simplex::ans() {
 	while(new_base_column_index > -1 && new_base_row_index > -1) {
 		print_table();
 
-		LP::M a = LP::M(1) / table[new_base_row_index][new_base_column_index];
-		for(auto &cell: table[new_base_row_index])
-			cell *= a;
-
-		rhs[new_base_row_index] *= a;
-
-		cj[new_base_row_index] = new_base_column_index;
-		cb[new_base_row_index] = lp.z_at(new_base_column_index);
-
-		auto &new_base_row = table[new_base_row_index];
-		for(size_t row_index = 0; row_index < table.size(); ++row_index) {
-			auto &t = table[row_index];
-			if(t == new_base_row)
-				continue;
-
-			a = t[new_base_column_index] / new_base_row[new_base_column_index];
-			for(int i = 0; i < t.size(); ++i)
-				t[i] -= a * new_base_row[i];
-
-			rhs[row_index] -= a * rhs[new_base_row_index];
-		}
-
-		a = c_bar[new_base_column_index] / new_base_row[new_base_column_index];
-		for(int i = 0; i < c_bar.size(); ++i)
-			c_bar[i] -= a * new_base_row[i];
-
-		auto last_z_bar = z_bar;
-		z_bar = cb * rhs;
+		auto last_z_bar = calculate_table(table, rhs, new_base_row_index, new_base_column_index);
 		if(z_bar == last_z_bar)
 			break;
 
@@ -610,6 +583,38 @@ void Simplex::print_ans() {
 			cout << name_of_var(i) << " = " << LP::to_string(cb[i]) << endl;
 		}
 
+}
+
+LP::M Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept {
+	LP::M a = LP::M(1) / table[row][column];
+	for(auto &cell: table[row])
+		cell *= a;
+
+	rhs[row] *= a;
+
+	cj[row] = column;
+	cb[row] = lp.z_at(column);
+
+	auto &new_base_row = table[row];
+	for(size_t row_index = 0; row_index < table.size(); ++row_index) {
+		auto &t = table[row_index];
+		if(t == new_base_row)
+			continue;
+
+		a = t[column] / new_base_row[column];
+		for(int i = 0; i < t.size(); ++i)
+			t[i] -= a * new_base_row[i];
+
+		rhs[row_index] -= a * rhs[row];
+	}
+
+	a = c_bar[column] / new_base_row[column];
+	for(int i = 0; i < c_bar.size(); ++i)
+		c_bar[i] -= a * new_base_row[i];
+
+	auto last_z_bar = z_bar;
+	z_bar = cb * rhs;
+	return last_z_bar;
 }
 
 
