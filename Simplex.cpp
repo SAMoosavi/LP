@@ -119,7 +119,7 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 
 				z[index_of_x_in_new_lp] = last_lp.z_at(index_of_x_in_last_lp) * sign;
 				transformers[index_of_x_in_last_lp] = [index_of_x_in_new_lp, sign](const Simplex::ListOfX &list) {
-					return sign * list[index_of_x_in_new_lp];
+					return list[index_of_x_in_new_lp] * sign;
 				};
 				break;
 			}
@@ -639,17 +639,18 @@ void Simplex::print_ans() {
 		}
 	}
 	size_t number_of_zero = 0;
-	for(size_t i = 0; i < number_of_x + number_of_s;i++) {
-		if(c_bar[i] == 0) ++number_of_zero;
+	for(size_t i = 0; i < number_of_x + number_of_s; i++) {
+		if(c_bar[i] == 0)
+			++number_of_zero;
 	}
 
-	if(number_of_zero > lp.get_number_of_line()){
+	if(number_of_zero > lp.get_number_of_line()) {
 		cout << ColoredString::blue("this has multi answers! one of answers is:\n");
 	}
-		for(size_t i = 0; i < cj.size();i++){
-			cout << name_of_var(i) << " = " << LP::to_string(cb[i]) << endl;
-		}
-
+	for(size_t i = 0; i < cj.size(); i++) {
+		cout << name_of_var(cj[i]) << " = " << LP::to_string(lp.rhs_at(i)) << endl;
+	}
+	print_transformers_ans();
 }
 
 LP::M Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept {
@@ -682,6 +683,17 @@ LP::M Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t 
 	auto last_z_bar = z_bar;
 	z_bar = cb * rhs;
 	return last_z_bar;
+}
+
+void Simplex::print_transformers_ans() const noexcept {
+	Simplex::ListOfX xs(lp.get_number_of_x(), 0);
+	for(size_t i = 0; i < cj.size(); i++) {
+		xs[cj[i]] = lp.rhs_at(i);
+	}
+	cout << ColoredString::yellow("So answer is:") << endl;
+	for(size_t i = 0; i < transformers.size(); i++) {
+		cout << name_of_var(i) << " = " << LP::to_string(transformers[i](xs)) << endl;
+	}
 }
 
 
