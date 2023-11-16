@@ -28,7 +28,7 @@ Simplex::Simplex(LP last_lp) {
 
 			for(const auto &index: cj) {
 				if(index >= number_of_x + number_of_s) {
-					cout << name_of_var(index) << " exist in base" << endl;
+					cout << name_of_var(index) << " exist in base so don't has answer." << endl;
 					return;
 				}
 			}
