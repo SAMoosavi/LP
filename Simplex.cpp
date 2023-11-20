@@ -12,8 +12,8 @@ Simplex::Simplex(LP last_lp) {
 	made_base();
 	if(number_of_r > 0) {
 		bool big_m = false;
-		//		cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
-		//		cin >> big_m;
+		cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
+		cin >> big_m;
 		if(big_m) {
 			ans();
 			print_table();
