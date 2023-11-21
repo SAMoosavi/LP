@@ -12,23 +12,6 @@ public:
 	Dual(LP lp);
 
 private:
-	/// This changes polynomial to string.
-	template<typename T>
-	string to_string(const string &varname, const vector<T> &arr, size_t n, bool show_empty,
-		const vector<size_t> &max_num_len);
-
-	/**
-	  * this function calculates maximum length in column.
-	  * @return list of maximum length in each column.
-	  */
-	vector<size_t> max2DVec(const LP::TableType &v);
-
-
-	/// this function prints the LP
-	void print(const string &varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization,
-		const LP::ZType &z, size_t number_of_line, const LP::TableType &table, LP::ComparativesType comparatives,
-		const LP::RHSesType &rhSes, LP::SignsType signs);
-
 	/// This function calculates transpose of @c table.
 	LP::TableType Transpose(const LP::TableType &table);
 
@@ -42,6 +25,8 @@ private:
 
 	/// This function swaps max to min(or min to max).
 	LP::TypeOfOptimization change_type_of_optimization(LP::TypeOfOptimization type);
+
+	LP dual_lp;
 };
 
 #endif

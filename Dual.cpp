@@ -8,119 +8,14 @@ using namespace std;
 
 Dual::Dual(LP lp) {
 	cout << endl << ColoredString::blue("Prime:") << endl;
-	print("x", lp.get_number_of_x(), lp.get_type_of_optimization(), lp.get_z(), lp.get_number_of_line(), lp.get_table(),
-		lp.get_comparatives(), lp.get_rhs(), lp.get_signs());
+	cout << lp.to_string("x") << endl;
 
 	cout << endl << ColoredString::blue("Dual:") << endl;
-	print("y", lp.get_number_of_line(), change_type_of_optimization(lp.get_type_of_optimization()), lp.get_rhs(),
-		lp.get_number_of_x(), Transpose(lp.get_table()),
-		SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()), lp.get_z(),
-		ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization()));
-}
-
-/// This changes polynomial to string.
-template<typename T>
-string Dual::to_string(const string &varname, const vector<T> &arr, size_t n, bool show_empty,
-	const vector<size_t> &max_num_len) {
-	const string VAR = varname + "_";
-	size_t MAX_LEN_OF_VAR = (std::to_string(n) + VAR).size();
-	string r;
-	bool exits_before = false;
-
-	// if coefficient of a variable is zero should call this function. this calculates number of space.
-	auto generate_empty = [MAX_LEN_OF_VAR, show_empty, max_num_len](size_t colum_index) -> string {
-		// if show_empty equals to false doesn't need to calculate space
-		if(!show_empty)
-			return "";
-		string r;
-		int operator_size = 2;
-		if(colum_index == 0)
-			operator_size = 0;
-		for(size_t i = 0; i < MAX_LEN_OF_VAR + max_num_len[colum_index] + operator_size; ++i)
-			r += " ";
-		return r;
-	};
-
-	// This calculates number of space needed to before of variable.
-	auto generate_space = [](const string &s, size_t max_num_len) {
-		string r;
-		if(max_num_len > s.size())
-			for(size_t i = 0; i < max_num_len - s.size(); ++i)
-				r += " ";
-		return r;
-	};
-
-	for(size_t i = 0; i < n; ++i) {
-		if(arr[i] == 0)
-			r += generate_empty(i);
-		else {
-			if(arr[i] > 0) {
-				if(exits_before)
-					r += " +";
-				else if(i != 0)
-					r += "  ";
-			} else if(arr[i] < 0) {
-				if(exits_before)
-					r += " ";
-			}
-			string num_str = LP::Coefficient::to_string(arr[i]);
-			r += generate_space(num_str, max_num_len[i]);
-			r += num_str;
-			r += VAR + std::to_string(i + 1);
-			exits_before = true;
-		}
-	}
-	return r;
-}
-
-/**
-  * this function calculates maximum length in column.
-  * @return list of maximum length in each column.
-  */
-vector<size_t> Dual::max2DVec(const LP::TableType &v) {
-	vector<size_t> m(v[0].size(), 0);
-	for(const auto &b: v) {
-		for(size_t i = 0; i < b.size(); ++i) {
-			auto s = LP::Coefficient::to_string(b[i]).size();
-			if(s > m[i])
-				m[i] = s;
-		}
-	}
-	return m;
-}
-
-/// this function prints the LP
-void Dual::print(const string &varname, size_t number_of_x, LP::TypeOfOptimization type_of_optimization,
-	const LP::ZType &z,
-	size_t number_of_line, const LP::TableType &table, LP::ComparativesType comparatives,
-	const LP::RHSesType &rhSes, LP::SignsType signs) {
-	// Z
-	cout << ColoredString::magenta(LP::to_string(type_of_optimization)) << " "
-	     << ColoredString::red(to_string(varname, z, number_of_x, false, vector<size_t>(number_of_x, 0)))
-	     << endl;
-
-	// S.Transpose.
-	for(int i = 0; i < number_of_line; ++i)
-		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
-		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
-		     << ColoredString::yellow(LP::Coefficient::to_string(rhSes[i]))
-		     << endl;
-
-	// Signs of variables
-	map<LP::Sign, vector<size_t>> sign;
-	for(size_t i = 0; i < number_of_x; i++)
-		sign[signs[i]].emplace_back(i);
-
-	const string VAR = varname + "_";
-
-	for(const auto &s1: sign) {
-		string s;
-		for(const auto &s2: s1.second)
-			s += VAR + std::to_string(s2 + 1) + ", ";
-		s.pop_back();
-		s.pop_back();
-		cout << ColoredString::magenta(s) << " " << ColoredString::magenta(LP::to_string(s1.first)) << endl;
-	}
+	dual_lp = {lp.get_number_of_line(), lp.get_number_of_x(),
+		change_type_of_optimization(lp.get_type_of_optimization()), lp.get_rhs(), Transpose(lp.get_table()), lp.get_z(),
+		SignToComparative(lp.get_signs(), lp.get_number_of_x(), lp.get_type_of_optimization()),
+		ComparativeToSign(lp.get_comparatives(), lp.get_number_of_line(), lp.get_type_of_optimization())};
+	cout << dual_lp.to_string("y") << endl;
 }
 
 /// This function calculates transpose of @c table.
