@@ -1,7 +1,7 @@
 #include "InputLP.h"
 #include "ColoredString.h"
 
-istream & operator>>(istream & is, LP::TypeOfOptimization & type) {
+istream &operator>>(istream &is, LP::TypeOfOptimization &type) {
 	int a;
 	while(true) {
 		is >> a;
@@ -15,7 +15,7 @@ istream & operator>>(istream & is, LP::TypeOfOptimization & type) {
 	return is;
 }
 
-istream & operator>>(istream & is, LP::Sign & sign) {
+istream &operator>>(istream &is, LP::Sign &sign) {
 	int a;
 	is >> a;
 	if(a < -1 or a > 1)
@@ -25,7 +25,7 @@ istream & operator>>(istream & is, LP::Sign & sign) {
 	return is;
 }
 
-istream & operator>>(istream & is, LP::Comparative & type) {
+istream &operator>>(istream &is, LP::Comparative &type) {
 	string a;
 	is >> a;
 	if(a == "<=")
@@ -37,6 +37,13 @@ istream & operator>>(istream & is, LP::Comparative & type) {
 	else
 		throw runtime_error("InputLP::Comparative is not a valid " + a);
 
+	return is;
+}
+
+std::istream &operator>>(std::istream &is, MNumber<double> &obj) {
+	double input_base_number;
+	is >> input_base_number;
+	obj = input_base_number;
 	return is;
 }
 
@@ -77,8 +84,8 @@ void InputLP::input_z() {
 	cout << ColoredString::white("Pleases enter Z: ")
 	     << ColoredString::red("(for input 2x_1 + 3 x_3 and you have 4 var enter 2 0 3 0)")
 	     << flush;
-	vector<int64_t> v(lp.get_number_of_x()) ;
-	for(auto & x: v)
+	vector<LP::Coefficient> v(lp.get_number_of_x());
+	for(auto &x: v)
 		cin >> x;
 	LP::ZType z(lp.get_number_of_x());
 	for(size_t i = 0; i < lp.get_number_of_x(); i++)
@@ -121,15 +128,15 @@ void InputLP::input_lines() {
 }
 
 void
-InputLP::input_line(size_t row_number, LP::TableType & table, LP::ComparativesType & comparatives, LP::RHSesType & b) {
-	auto & row = table[row_number];
+InputLP::input_line(size_t row_number, LP::TableType &table, LP::ComparativesType &comparatives, LP::RHSesType &b) {
+	auto &row = table[row_number];
 	row.resize(lp.get_number_of_x());
-	for(auto & cell: row) {
-		int64_t n;
+	for(auto &cell: row) {
+		LP::Coefficient n;
 		cin >> n;
 		cell = n;
 	}
-	int64_t n;
+	LP::Coefficient n;
 	cin >> comparatives[row_number] >> n;
 	b[row_number] = n;
 }
@@ -139,7 +146,7 @@ void InputLP::input_signs() {
 	     << ColoredString::red("(0 is free, -1 is mean negative, 1 is positive)")
 	     << flush;
 	LP::SignsType signs(lp.get_number_of_x());
-	for(auto & sign: signs)
+	for(auto &sign: signs)
 		cin >> sign;
 	lp.set_signs(signs);
 }
