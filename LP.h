@@ -69,10 +69,9 @@ public:
 	Sign sign_at(size_t index) const noexcept;
 
 	static std::string to_string(TypeOfOptimization type) noexcept;
-
 	static std::string to_string(Sign s) noexcept;
-
 	static std::string to_string(Comparative c) noexcept;
+	std::string to_string(const std::string& name_of_var) const noexcept;
 
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x
@@ -89,6 +88,10 @@ private:
 
 	/// Check size of @c z is @c number_of_x
 	void validate_z() const;
+
+	std::string z_to_string(const std::string &name_of_var) const noexcept;
+	std::string body_to_string(const std::string &name_of_var) const noexcept;
+	std::string signs_to_string(const std::string &name_of_var) const noexcept;
 
 	size_t number_of_x;
 	size_t number_of_line;

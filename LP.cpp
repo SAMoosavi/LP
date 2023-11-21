@@ -4,6 +4,9 @@
 
 #include <string>
 #include <stdexcept>
+#include <ranges>
+#include <algorithm>
+#include <map>
 
 std::string LP::to_string(LP::TypeOfOptimization type) noexcept {
 	switch(type) {
@@ -99,7 +102,7 @@ LP::TypeOfOptimization LP::get_type_of_optimization() const noexcept {
 	return type_of_optimization;
 }
 
-LP::ZType LP::get_z() const noexcept  {
+LP::ZType LP::get_z() const noexcept {
 	return z;
 }
 
@@ -183,4 +186,83 @@ void LP::set_comparatives(const LP::ComparativesType &c) {
 void LP::set_signs(const LP::SignsType &s) {
 	signs = s;
 	validate_signs();
+}
+
+std::string LP::to_string(const std::string &name_of_var) const noexcept {
+	std::string result;
+	result += z_to_string(name_of_var);
+	result += body_to_string(name_of_var);
+	result += signs_to_string(name_of_var);
+	return result;
+}
+
+std::string LP::z_to_string(const std::string &name_of_var) const noexcept {
+	std::string result;
+	result += ColoredString::yellow(to_string(type_of_optimization)) + " ";
+	for(int i = 0; i < z.size(); ++i) {
+		if(z[i] == 0)
+			continue;
+		std::string z_str = (std::string)z[i] + name_of_var + std::to_string(i + 1);
+		if(!z_str.starts_with('-'))
+			result += ColoredString::blue("+");
+		result += ColoredString::blue(z_str + " ");
+	}
+	result += '\n';
+	return result;
+}
+
+std::string LP::body_to_string(const std::string &name_of_var) const noexcept {
+	std::string result;
+	std::vector<std::string> rows(number_of_line, "");
+	for(int column_index = 0; column_index < number_of_x; ++column_index) {
+		std::vector<std::string> column(number_of_line);
+		for(int row_index = 0; row_index < number_of_line; row_index++) {
+			if(table[row_index][column_index] == 0) {
+				column[row_index] = "";
+				continue;
+			} else if(!std::string(table[row_index][column_index]).starts_with('-'))
+				column[row_index] = "+";
+			column[row_index] += std::string(table[row_index][column_index]) + name_of_var
+			                     + std::to_string(row_index + 1);
+		}
+
+		size_t maxStringLength =
+			(*std::ranges::max_element(column, [](const auto &a, const auto &b) {
+				return a.length() < b.length();
+			})).length();
+
+		const auto generate_space = [](size_t num) {
+			std::string s;
+			for(size_t i = 0; i < num; ++i)
+				s += " ";
+			return s;
+		};
+		for(int row_index = 0; row_index < number_of_line; row_index++)
+			rows[row_index] += generate_space(maxStringLength - column[row_index].length()) + column[row_index] + " ";
+	}
+
+	for(int row_index = 0; row_index < number_of_line; row_index++)
+		result += ColoredString::green(rows[row_index]) + ColoredString::yellow(to_string(comparatives[row_index])) +
+		          " " + ColoredString::green(Coefficient::to_string(rhses[row_index])) +
+		          '\n';
+
+	return result;
+}
+
+std::string LP::signs_to_string(const std::string &name_of_var) const noexcept {
+	std::string result;
+	std::map<LP::Sign, std::vector<size_t>> sign;
+	for(size_t i = 0; i < number_of_x; i++)
+		sign[signs[i]].emplace_back(i);
+
+	for(const auto &s1: sign) {
+		std::string s;
+		for(const auto &s2: s1.second)
+			s += name_of_var + std::to_string(s2 + 1) + ", ";
+		s.pop_back();
+		s.pop_back();
+		result += ColoredString::magenta(s) + " " + ColoredString::magenta(LP::to_string(s1.first)) + '\n';
+	}
+
+	return result;
 }
