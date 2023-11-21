@@ -34,25 +34,25 @@ string LP::to_string(LP::Comparative c) noexcept {
 }
 
 LP::LP()
-	: number_of_x(0)
-	, number_of_line(0)
-	, type_of_optimization(TypeOfOptimization::max)
-	, z()
-	, table()
-	, rhses()
-	, comparatives()
-	, signs() {}
+: number_of_x(0)
+, number_of_line(0)
+, type_of_optimization(TypeOfOptimization::max)
+, z()
+, table()
+, rhses()
+, comparatives()
+, signs() {}
 
 LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
 	TableType table, RHSesType rhses, ComparativesType comparatives, SignsType signs)
-	: number_of_x(number_of_x)
-	, number_of_line(number_of_line)
-	, type_of_optimization(type_of_optimization)
-	, z(std::move(z))
-	, table(std::move(table))
-	, rhses(std::move(rhses))
-	, comparatives(std::move(comparatives))
-	, signs(std::move(signs)) {
+: number_of_x(number_of_x)
+, number_of_line(number_of_line)
+, type_of_optimization(type_of_optimization)
+, z(std::move(z))
+, table(std::move(table))
+, rhses(std::move(rhses))
+, comparatives(std::move(comparatives))
+, signs(std::move(signs)) {
 	validate_z();
 	validate_rhses();
 	validate_table();
@@ -81,13 +81,11 @@ void LP::validate_z() const {
 void LP::validate_comparatives() const {
 	if(this->comparatives.size() != number_of_line)
 		throw runtime_error(ColoredString::red("Invalid size of comparatives."));
-
 }
 
 void LP::validate_signs() const {
 	if(this->signs.size() != number_of_x)
 		throw runtime_error(ColoredString::red("Invalid size of signs."));
-
 }
 
 size_t LP::get_number_of_x() const noexcept {
@@ -102,7 +100,7 @@ LP::TypeOfOptimization LP::get_type_of_optimization() const noexcept {
 	return type_of_optimization;
 }
 
-auto LP::get_z() const noexcept -> ZType {
+LP::ZType LP::get_z() const noexcept  {
 	return z;
 }
 
@@ -110,7 +108,7 @@ LP::Coefficient LP::z_at(size_t index) const noexcept {
 	return z[index];
 }
 
-auto LP::get_table() const noexcept -> TableType {
+LP::TableType LP::get_table() const noexcept {
 	return table;
 }
 
@@ -118,8 +116,7 @@ LP::CellOfTable LP::table_at(size_t number_of_row, size_t number_of_column) cons
 	return table[number_of_row][number_of_column];
 }
 
-
-auto LP::get_rhs() const noexcept -> RHSesType {
+LP::RHSesType LP::get_rhs() const noexcept {
 	return rhses;
 }
 
@@ -127,7 +124,7 @@ LP::Coefficient LP::rhs_at(size_t index) const noexcept {
 	return rhses[index];
 }
 
-auto LP::get_comparatives() const noexcept -> ComparativesType {
+LP::ComparativesType LP::get_comparatives() const noexcept {
 	return comparatives;
 }
 
@@ -135,7 +132,7 @@ LP::Comparative LP::comparative_at(size_t index) const noexcept {
 	return comparatives[index];
 }
 
-auto LP::get_signs() const noexcept -> SignsType {
+LP::SignsType LP::get_signs() const noexcept {
 	return signs;
 }
 
