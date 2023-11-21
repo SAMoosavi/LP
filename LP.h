@@ -36,7 +36,7 @@ public:
 	LP();
 
 	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
-		TableType table, RHSesType b, ComparativesType comparatives, SignsType signs);
+		TableType table, RHSesType rhses, ComparativesType comparatives, SignsType signs);
 
 	void set_number_of_x(size_t num);
 	size_t get_number_of_x() const noexcept;

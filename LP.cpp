@@ -44,13 +44,13 @@ LP::LP()
 	, signs() {}
 
 LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
-	TableType table, RHSesType b, ComparativesType comparatives, SignsType signs)
+	TableType table, RHSesType rhses, ComparativesType comparatives, SignsType signs)
 	: number_of_x(number_of_x)
 	, number_of_line(number_of_line)
 	, type_of_optimization(type_of_optimization)
 	, z(std::move(z))
 	, table(std::move(table))
-	, rhses(std::move(b))
+	, rhses(std::move(rhses))
 	, comparatives(std::move(comparatives))
 	, signs(std::move(signs)) {
 	validate_z();
