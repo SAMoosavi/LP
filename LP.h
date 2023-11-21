@@ -1,9 +1,10 @@
 #ifndef LP_LP_H
 #define LP_LP_H
 
-#include <bits/stdc++.h>
 #include "MNumber.h"
-using namespace std;
+
+#include <vector>
+#include <string>
 
 /// Save linear programing information
 class LP {
@@ -25,13 +26,13 @@ public:
 	};
 
 	typedef MNumber<double> Coefficient;
-	typedef vector<Coefficient> ZType;
-	typedef vector<Coefficient> RHSesType;
+	typedef std::vector<Coefficient> ZType;
+	typedef std::vector<Coefficient> RHSesType;
 	typedef Coefficient CellOfTable;
-	typedef vector<CellOfTable> RowOfTable;
-	typedef vector<RowOfTable> TableType;
-	typedef vector<Comparative> ComparativesType;
-	typedef vector<Sign> SignsType;
+	typedef std::vector<CellOfTable> RowOfTable;
+	typedef std::vector<RowOfTable> TableType;
+	typedef std::vector<Comparative> ComparativesType;
+	typedef std::vector<Sign> SignsType;
 
 	LP();
 
@@ -67,11 +68,11 @@ public:
 	SignsType get_signs() const noexcept;
 	Sign sign_at(size_t index) const noexcept;
 
-	static string to_string(TypeOfOptimization type) noexcept;
+	static std::string to_string(TypeOfOptimization type) noexcept;
 
-	static string to_string(Sign s) noexcept;
+	static std::string to_string(Sign s) noexcept;
 
-	static string to_string(Comparative c) noexcept;
+	static std::string to_string(Comparative c) noexcept;
 
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x

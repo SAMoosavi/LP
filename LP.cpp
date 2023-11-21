@@ -1,12 +1,11 @@
-#include <bits/stdc++.h>
-
 #include "LP.h"
 #include "ColoredString.h"
 #include "MNumber.h"
 
-using namespace std;
+#include <string>
+#include <stdexcept>
 
-string LP::to_string(LP::TypeOfOptimization type) noexcept {
+std::string LP::to_string(LP::TypeOfOptimization type) noexcept {
 	switch(type) {
 		case TypeOfOptimization::min: return "min";
 		case TypeOfOptimization::max: return "max";
@@ -14,7 +13,7 @@ string LP::to_string(LP::TypeOfOptimization type) noexcept {
 	}
 }
 
-string LP::to_string(LP::Sign s) noexcept {
+std::string LP::to_string(LP::Sign s) noexcept {
 	switch(s) {
 		case Sign::negative: return "<= 0";
 		case Sign::positive: return ">= 0";
@@ -24,7 +23,7 @@ string LP::to_string(LP::Sign s) noexcept {
 	}
 }
 
-string LP::to_string(LP::Comparative c) noexcept {
+std::string LP::to_string(LP::Comparative c) noexcept {
 	switch(c) {
 		case Comparative::lower: return "<=";
 		case Comparative::equal: return " =";
@@ -62,30 +61,30 @@ LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_opt
 
 void LP::validate_table() const {
 	if(this->table.size() != number_of_line)
-		throw runtime_error(ColoredString::red("Invalid size of table."));
+		throw std::runtime_error(ColoredString::red("Invalid size of table."));
 	for(auto &t: this->table)
 		if(t.size() != number_of_x)
-			throw runtime_error(ColoredString::red("Invalid size of table."));
+			throw std::runtime_error(ColoredString::red("Invalid size of table."));
 }
 
 void LP::validate_rhses() const {
 	if(this->rhses.size() != number_of_line)
-		throw runtime_error(ColoredString::red("Invalid size of right hand side."));
+		throw std::runtime_error(ColoredString::red("Invalid size of right hand side."));
 }
 
 void LP::validate_z() const {
 	if(this->z.size() != number_of_x)
-		throw runtime_error(ColoredString::red("Invalid size of z."));
+		throw std::runtime_error(ColoredString::red("Invalid size of z."));
 }
 
 void LP::validate_comparatives() const {
 	if(this->comparatives.size() != number_of_line)
-		throw runtime_error(ColoredString::red("Invalid size of comparatives."));
+		throw std::runtime_error(ColoredString::red("Invalid size of comparatives."));
 }
 
 void LP::validate_signs() const {
 	if(this->signs.size() != number_of_x)
-		throw runtime_error(ColoredString::red("Invalid size of signs."));
+		throw std::runtime_error(ColoredString::red("Invalid size of signs."));
 }
 
 size_t LP::get_number_of_x() const noexcept {
