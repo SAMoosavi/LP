@@ -8,8 +8,6 @@ using namespace std;
 /// Save linear programing information
 class LP {
 public:
-	class M;
-
 	enum TypeOfOptimization {
 		min = 0, max = 1
 	};
@@ -75,71 +73,12 @@ public:
 
 	static string to_string(Comparative c) noexcept;
 
-/*	static string to_string(M m) noexcept;
-
-	class M {
-	public:
-		M();
-		M(double num);
-		M(double inf, double num);
-
-		M(const M &other);
-		M(M &&other) noexcept;
-
-		M &operator=(const M &other);
-		M &operator=(const double &other);
-		M &operator=(M &&other) noexcept;
-
-		M operator+(const M &obj) const noexcept;
-		M operator+(const double &obj) const noexcept;
-
-		M operator+=(const M &obj) noexcept;
-		M operator+=(const double &obj) noexcept;
-
-		M operator*(const M &obj) const;
-		M operator*(const double &obj) const noexcept;
-
-		M operator*=(const M &obj);
-		M operator*=(const double &obj) noexcept;
-
-		M operator/(const M &obj) const;
-		M operator/(const double &obj) const noexcept;
-
-		M operator-() const noexcept;
-
-		M operator-(const M &obj) const noexcept;
-		M operator-(const double &obj) const noexcept;
-
-		M &operator-=(const M &obj) noexcept;
-		M &operator-=(const double &obj) noexcept;
-
-		bool operator==(const M &other) const noexcept;
-		bool operator==(const double &other) const noexcept;
-
-		bool operator>(const M &other) const noexcept;
-		bool operator>(const double &other) const noexcept;
-
-		bool operator>=(const M &other) const noexcept;
-		bool operator>=(const double &other) const noexcept;
-
-		bool operator<(const M &other) const noexcept;
-		bool operator<(const double &other) const noexcept;
-
-		bool operator<=(const M &other) const noexcept;
-		bool operator<=(const double &other) const noexcept;
-
-		operator string() const noexcept;
-	private:
-		double inf;
-		double num;
-	};*/
-
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x
 	void validate_table() const;
 
-	/// Check size of @c b is @c number_of_line
-	void validate_b() const;
+	/// Check size of @c rhses is @c number_of_line
+	void validate_rhses() const;
 
 	/// Check size of @c comparatives is @c number_of_line
 	void validate_comparatives() const;
@@ -155,7 +94,7 @@ private:
 	TypeOfOptimization type_of_optimization;
 	ZType z;
 	TableType table;
-	RHSesType b;
+	RHSesType rhses;
 	ComparativesType comparatives;
 	SignsType signs;
 };

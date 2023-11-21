@@ -39,7 +39,7 @@ LP::LP()
 	, type_of_optimization(TypeOfOptimization::max)
 	, z()
 	, table()
-	, b()
+	, rhses()
 	, comparatives()
 	, signs() {}
 
@@ -50,11 +50,11 @@ LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_opt
 	, type_of_optimization(type_of_optimization)
 	, z(std::move(z))
 	, table(std::move(table))
-	, b(std::move(b))
+	, rhses(std::move(b))
 	, comparatives(std::move(comparatives))
 	, signs(std::move(signs)) {
 	validate_z();
-	validate_b();
+	validate_rhses();
 	validate_table();
 	validate_comparatives();
 	validate_signs();
@@ -68,8 +68,8 @@ void LP::validate_table() const {
 			throw runtime_error(ColoredString::red("Invalid size of table."));
 }
 
-void LP::validate_b() const {
-	if(this->b.size() != number_of_line)
+void LP::validate_rhses() const {
+	if(this->rhses.size() != number_of_line)
 		throw runtime_error(ColoredString::red("Invalid size of right hand side."));
 }
 
@@ -120,11 +120,11 @@ LP::CellOfTable LP::table_at(size_t number_of_row, size_t number_of_column) cons
 
 
 auto LP::get_rhs() const noexcept -> RHSesType {
-	return b;
+	return rhses;
 }
 
 LP::Coefficient LP::rhs_at(size_t index) const noexcept {
-	return b[index];
+	return rhses[index];
 }
 
 auto LP::get_comparatives() const noexcept -> ComparativesType {
@@ -156,7 +156,7 @@ void LP::set_number_of_line(size_t num) {
 	table.resize(num);
 	for(auto &t: table)
 		t.resize(number_of_x);
-	b.resize(num);
+	rhses.resize(num);
 	comparatives.resize(num);
 }
 
@@ -175,8 +175,8 @@ void LP::set_table(const LP::TableType &t) {
 }
 
 void LP::set_rhs(const LP::RHSesType &rhs) {
-	b = rhs;
-	validate_b();
+	rhses = rhs;
+	validate_rhses();
 }
 
 void LP::set_comparatives(const LP::ComparativesType &c) {

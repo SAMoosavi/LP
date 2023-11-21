@@ -127,7 +127,7 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 	lp.set_z(z);
 	lp.set_signs(LP::SignsType(number_of_x_prime, LP::Sign::positive));
 
-	/// change each @c b to positive
+	/// change each @c rhses to positive
 	LP::RHSesType rhs = lp.get_rhs();
 	LP::ComparativesType comparatives = last_lp.get_comparatives();
 	for(size_t index_of_row = 0; index_of_row < lp.get_number_of_line(); ++index_of_row) {
@@ -236,7 +236,7 @@ void Simplex::edit_base() {
 template<typename T>
 T operator*(const vector<T> &a, const vector<T> &b) {
 	if(a.size() != b.size())
-		throw std::runtime_error(ColoredString::red("length of a and b must be equal"));
+		throw std::runtime_error(ColoredString::red("length of a and rhses must be equal"));
 
 	T r;
 	for(int i = 0; i < a.size(); ++i)
