@@ -2,7 +2,7 @@
 #define LP_LP_H
 
 #include <bits/stdc++.h>
-
+#include "MNumber.h"
 using namespace std;
 
 /// Save linear programing information
@@ -26,7 +26,7 @@ public:
 		greater = 1
 	};
 
-	typedef M Coefficient;
+	typedef MNumber<double> Coefficient;
 	typedef vector<Coefficient> ZType;
 	typedef vector<Coefficient> RHSesType;
 	typedef Coefficient CellOfTable;
@@ -75,7 +75,7 @@ public:
 
 	static string to_string(Comparative c) noexcept;
 
-	static string to_string(M m) noexcept;
+/*	static string to_string(M m) noexcept;
 
 	class M {
 	public:
@@ -132,7 +132,7 @@ public:
 	private:
 		double inf;
 		double num;
-	};
+	};*/
 
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x

@@ -10,7 +10,7 @@ using namespace std;
 
 class Simplex {
 public:
-	typedef LP::M ValueOfX;
+	typedef LP::Coefficient ValueOfX;
 	typedef vector<ValueOfX> ListOfX;
 	typedef function<ValueOfX(const ListOfX &)> Transformer;
 	typedef vector<Transformer> Transformers;
@@ -83,7 +83,7 @@ private:
 
 	void print_ans();
 
-	LP::M calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept;
+	LP::Coefficient calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept;
 
 	void print_transformers_ans() const noexcept;
 
@@ -93,10 +93,10 @@ private:
 	size_t number_of_s;
 	size_t number_of_r;
 	Bases bases;
-	vector<LP::M> cb{};
+	vector<LP::Coefficient> cb{};
 	vector<size_t> cj{};
-	vector<LP::M> c_bar{};
-	LP::M z_bar;
+	vector<LP::Coefficient> c_bar{};
+	LP::Coefficient z_bar;
 };
 
 #endif

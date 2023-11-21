@@ -63,7 +63,7 @@ string Dual::to_string(const string &varname, const vector<T> &arr, size_t n, bo
 				if(exits_before)
 					r += " ";
 			}
-			string num_str = LP::to_string(arr[i]);
+			string num_str = LP::Coefficient::to_string(arr[i]);
 			r += generate_space(num_str, max_num_len[i]);
 			r += num_str;
 			r += VAR + std::to_string(i + 1);
@@ -81,7 +81,7 @@ vector<size_t> Dual::max2DVec(const LP::TableType &v) {
 	vector<size_t> m(v[0].size(), 0);
 	for(const auto &b: v) {
 		for(size_t i = 0; i < b.size(); ++i) {
-			auto s = LP::to_string(b[i]).size();
+			auto s = LP::Coefficient::to_string(b[i]).size();
 			if(s > m[i])
 				m[i] = s;
 		}
@@ -103,7 +103,7 @@ void Dual::print(const string &varname, size_t number_of_x, LP::TypeOfOptimizati
 	for(int i = 0; i < number_of_line; ++i)
 		cout << ColoredString::yellow(to_string(varname, table[i], number_of_x, true, max2DVec(table))) << " "
 		     << ColoredString::green(LP::to_string(comparatives[i])) << " "
-		     << ColoredString::yellow(LP::to_string(rhSes[i]))
+		     << ColoredString::yellow(LP::Coefficient::to_string(rhSes[i]))
 		     << endl;
 
 	// Signs of variables

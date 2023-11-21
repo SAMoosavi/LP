@@ -4,6 +4,7 @@
 #include "InputLP.h"
 #include "LP.h"
 #include "Simplex.h"
+#include "MNumber.h"
 
 using namespace std;
 
@@ -165,11 +166,11 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 void Simplex::made_base() {
 	LP new_lp;
 	number_of_r = 0;
-	LP::M m;
+	LP::Coefficient m;
 	switch(lp.get_type_of_optimization()) {
-		case LP::min: m = LP::M(1, 0);
+		case LP::min: m = LP::Coefficient(1, 0);
 			break;
-		case LP::max: m = LP::M(-1, 0);
+		case LP::max: m = LP::Coefficient(-1, 0);
 			break;
 	}
 
@@ -647,13 +648,13 @@ void Simplex::print_ans() {
 		cout << ColoredString::blue("this has multi answers! one of answers is:\n");
 	}
 	for(size_t i = 0; i < cj.size(); i++) {
-		cout << name_of_var(cj[i]) << " = " << LP::to_string(lp.rhs_at(i)) << endl;
+		cout << name_of_var(cj[i]) << " = " << LP::Coefficient::to_string(lp.rhs_at(i)) << endl;
 	}
 	print_transformers_ans();
 }
 
-LP::M Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept {
-	LP::M a = LP::M(1) / table[row][column];
+LP::Coefficient Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept {
+	LP::Coefficient a = LP::Coefficient(1) / table[row][column];
 	for(auto &cell: table[row])
 		cell *= a;
 
@@ -691,7 +692,7 @@ void Simplex::print_transformers_ans() const noexcept {
 	}
 	cout << ColoredString::yellow("So answer is:") << endl;
 	for(size_t i = 0; i < transformers.size(); i++) {
-		cout << name_of_var(i, false) << " = " << LP::to_string(transformers[i](xs)) << endl;
+		cout << name_of_var(i, false) << " = " << LP::Coefficient::to_string(transformers[i](xs)) << endl;
 	}
 }
 
