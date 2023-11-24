@@ -1,19 +1,21 @@
-#include <bits/stdc++.h>
-
-#include "ColoredString.h"
-#include "InputLP.h"
-#include "LP.h"
 #include "Simplex.h"
 
-using namespace std;
+#include <iostream>
+#include <string>
+#include <vector>
 
-Simplex::Simplex(LP last_lp) {
+#include "ColoredString.h"
+#include "LP.h"
+#include "MNumber.h"
+
+Simplex::Simplex(const LP &last_lp)
+{
 	creat_std_lp(last_lp);
 	made_base();
 	if(number_of_r > 0) {
 		bool big_m = false;
-		cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
-		cin >> big_m;
+		std::cout << "use big M or 2 faz?(big m enter 1, 2 faz enter 0)";
+		std::cin >> big_m;
 		if(big_m) {
 			ans();
 			print_table();
@@ -25,9 +27,8 @@ Simplex::Simplex(LP last_lp) {
 			ans();
 			print_table();
 
-
-			if(!(z_bar == 0)) {
-				cout << "R exist in base so don't has answer." << endl;
+			if(z_bar != 0) {
+				std::cout << "R exist in base so don't has answer." << std::endl;
 				return;
 			}
 			number_of_r++;
@@ -64,7 +65,6 @@ Simplex::Simplex(LP last_lp) {
 			cj.push_back(lp.get_number_of_x()-1);
 			ans();
 			print_table();
-
 		}
 	} else {
 		ans();
@@ -73,7 +73,8 @@ Simplex::Simplex(LP last_lp) {
 	print_ans();
 }
 
-void Simplex::creat_std_lp(const LP &last_lp) {
+void Simplex::creat_std_lp(const LP &last_lp)
+{
 	lp.set_type_of_optimization(last_lp.get_type_of_optimization());
 
 	size_t number_of_free_var = 0;
@@ -96,44 +97,43 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 
 	/// create each var to positive
 	size_t index_of_x_in_new_lp = 0;
-	for(size_t index_of_x_in_last_lp = 0;
-		index_of_x_in_last_lp < last_lp.get_number_of_x(); ++index_of_x_in_new_lp, ++index_of_x_in_last_lp) {
+	for(size_t index_of_x_in_last_lp = 0; index_of_x_in_last_lp < last_lp.get_number_of_x();
+	    ++index_of_x_in_new_lp, ++index_of_x_in_last_lp) {
 		switch(last_lp.sign_at(index_of_x_in_last_lp)) {
-			case LP::freeSign: {
-				// create a new x and set first positive of value and second value negative
-				for(size_t index_of_row = 0; index_of_row < last_lp.get_number_of_line(); ++index_of_row) {
-					table[index_of_row][index_of_x_in_new_lp] = last_lp.table_at(index_of_row, index_of_x_in_last_lp);
-					table[index_of_row][index_of_x_in_new_lp + 1] = -last_lp.table_at(index_of_row,
-						index_of_x_in_last_lp);
-				}
-				z[index_of_x_in_new_lp] = last_lp.z_at(index_of_x_in_last_lp);
-				z[index_of_x_in_new_lp + 1] = -last_lp.z_at(index_of_x_in_last_lp);
-				transformers[index_of_x_in_last_lp] = [index_of_x_in_new_lp](const Simplex::ListOfX &list) {
-					return list[index_of_x_in_new_lp] - list[index_of_x_in_new_lp + 1];
-				};
-				++index_of_x_in_new_lp;
-				break;
+		case LP::freeSign: {
+			// create a new x and set first positive of value and second value negative
+			for(size_t index_of_row = 0; index_of_row < last_lp.get_number_of_line(); ++index_of_row) {
+				table[index_of_row][index_of_x_in_new_lp] = last_lp.table_at(index_of_row, index_of_x_in_last_lp);
+				table[index_of_row][index_of_x_in_new_lp + 1] = -last_lp.table_at(index_of_row, index_of_x_in_last_lp);
 			}
-			case LP::negative:
-			case LP::positive: {
-				// If negative use negative value or not use positive value
-				int sign = last_lp.sign_at(index_of_x_in_last_lp) == LP::negative? -1: 1;
-				for(size_t index_of_row = 0; index_of_row < last_lp.get_number_of_line(); ++index_of_row)
-					table[index_of_row][index_of_x_in_new_lp] =
-						last_lp.table_at(index_of_row, index_of_x_in_last_lp) * sign;
+			z[index_of_x_in_new_lp] = last_lp.z_at(index_of_x_in_last_lp);
+			z[index_of_x_in_new_lp + 1] = -last_lp.z_at(index_of_x_in_last_lp);
+			transformers[index_of_x_in_last_lp] = [index_of_x_in_new_lp](const Simplex::ListOfX &list) {
+				return list[index_of_x_in_new_lp] - list[index_of_x_in_new_lp + 1];
+			};
+			++index_of_x_in_new_lp;
+			break;
+		}
+		case LP::negative:
+		case LP::positive: {
+			// If negative use negative value or not use positive value
+			int sign = last_lp.sign_at(index_of_x_in_last_lp) == LP::negative ? -1 : 1;
+			for(size_t index_of_row = 0; index_of_row < last_lp.get_number_of_line(); ++index_of_row)
+				table[index_of_row][index_of_x_in_new_lp] =
+				    last_lp.table_at(index_of_row, index_of_x_in_last_lp) * sign;
 
-				z[index_of_x_in_new_lp] = last_lp.z_at(index_of_x_in_last_lp) * sign;
-				transformers[index_of_x_in_last_lp] = [index_of_x_in_new_lp, sign](const Simplex::ListOfX &list) {
-					return list[index_of_x_in_new_lp] * sign;
-				};
-				break;
-			}
+			z[index_of_x_in_new_lp] = last_lp.z_at(index_of_x_in_last_lp) * sign;
+			transformers[index_of_x_in_last_lp] = [index_of_x_in_new_lp, sign](const Simplex::ListOfX &list) {
+				return list[index_of_x_in_new_lp] * sign;
+			};
+			break;
+		}
 		}
 	}
 	lp.set_z(z);
 	lp.set_signs(LP::SignsType(number_of_x_prime, LP::Sign::positive));
 
-	/// change each @c b to positive
+	/// change each @c rhses to positive
 	LP::RHSesType rhs = lp.get_rhs();
 	LP::ComparativesType comparatives = last_lp.get_comparatives();
 	for(size_t index_of_row = 0; index_of_row < lp.get_number_of_line(); ++index_of_row) {
@@ -144,11 +144,14 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 			for(LP::CellOfTable &cell: table[index_of_row])
 				cell = -cell;
 			switch(comparatives[index_of_row]) {
-				case LP::Comparative::lower: comparatives[index_of_row] = LP::Comparative::greater;
-					break;
-				case LP::Comparative::equal:break;
-				case LP::Comparative::greater: comparatives[index_of_row] = LP::Comparative::lower;
-					break;
+			case LP::Comparative::lower:
+				comparatives[index_of_row] = LP::Comparative::greater;
+				break;
+			case LP::Comparative::equal:
+				break;
+			case LP::Comparative::greater:
+				comparatives[index_of_row] = LP::Comparative::lower;
+				break;
 			}
 		}
 	}
@@ -169,15 +172,18 @@ void Simplex::creat_std_lp(const LP &last_lp) {
 	lp.set_table(table);
 }
 
-void Simplex::made_base() {
+void Simplex::made_base()
+{
 	LP new_lp;
 	number_of_r = 0;
-	LP::M m;
+	LP::Coefficient m;
 	switch(lp.get_type_of_optimization()) {
-		case LP::min: m = LP::M(1, 0);
-			break;
-		case LP::max: m = LP::M(-1, 0);
-			break;
+	case LP::min:
+		m = LP::Coefficient(1, 0);
+		break;
+	case LP::max:
+		m = LP::Coefficient(-1, 0);
+		break;
 	}
 
 	auto z = lp.get_z();
@@ -228,7 +234,8 @@ void Simplex::made_base() {
 	lp = new_lp;
 }
 
-void Simplex::edit_base() {
+void Simplex::edit_base()
+{
 	lp.set_type_of_optimization(LP::TypeOfOptimization::min);
 
 	LP::ZType z(lp.get_number_of_x(), 0);
@@ -240,9 +247,10 @@ void Simplex::edit_base() {
 }
 
 template<typename T>
-T operator*(const vector<T> &a, const vector<T> &b) {
+T operator*(const std::vector<T> &a, const std::vector<T> &b)
+{
 	if(a.size() != b.size())
-		throw std::runtime_error(ColoredString::red("length of a and b must be equal"));
+		throw std::runtime_error(ColoredString::red("length of a and rhses must be equal"));
 
 	T r;
 	for(int i = 0; i < a.size(); ++i)
@@ -251,7 +259,8 @@ T operator*(const vector<T> &a, const vector<T> &b) {
 	return r;
 }
 
-LP::TableType Transpose(const LP::TableType &table) {
+LP::TableType Transpose(const LP::TableType &table)
+{
 	LP::TableType r(table[0].size(), LP::RowOfTable(table.size()));
 	for(int i = 0; i < table.size(); ++i)
 		for(int j = 0; j < table[i].size(); ++j)
@@ -260,7 +269,8 @@ LP::TableType Transpose(const LP::TableType &table) {
 }
 
 template<typename T>
-ssize_t max(const vector<T> &a) {
+ssize_t max(const std::vector<T> &a)
+{
 	ssize_t max_index = -1;
 	T max_val = 0;
 	for(ssize_t i = 0; i < a.size(); ++i) {
@@ -273,7 +283,8 @@ ssize_t max(const vector<T> &a) {
 }
 
 template<typename T>
-ssize_t min(const vector<T> &a) {
+ssize_t min(const std::vector<T> &a)
+{
 	ssize_t min_index = -1;
 	T min_val = 0;
 	for(ssize_t i = 0; i < a.size(); ++i) {
@@ -286,7 +297,8 @@ ssize_t min(const vector<T> &a) {
 }
 
 template<typename T>
-ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
+ssize_t min_test(const std::vector<T> &column, const std::vector<T> &rhs)
+{
 	ssize_t min_index = -1;
 	T min_val = -1;
 	for(ssize_t i = 0; i < column.size(); ++i) {
@@ -303,7 +315,14 @@ ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
 	return min_index;
 }
 
-void Simplex::ans() {
+ssize_t Simplex::select_column() const noexcept
+{
+	return lp.get_type_of_optimization() == LP::TypeOfOptimization::max ? max(c_bar) : min(c_bar);
+	;
+}
+
+void Simplex::ans()
+{
 	cb.clear();
 	c_bar.clear();
 	auto table = lp.get_table();
@@ -327,8 +346,7 @@ void Simplex::ans() {
 		c_bar.push_back(lp.z_at(i) - cb * t_table[i]);
 
 	auto rhs = lp.get_rhs();
-	ssize_t new_base_column_index =
-		lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
+	ssize_t new_base_column_index = select_column();
 	ssize_t new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 	while(new_base_column_index > -1 && new_base_row_index > -1) {
 		print_table();
@@ -336,7 +354,7 @@ void Simplex::ans() {
 		auto last_z_bar = calculate_table(table, rhs, new_base_row_index, new_base_column_index);
 
 		t_table = Transpose(table);
-		new_base_column_index = lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
+		new_base_column_index = select_column();
 		if(new_base_column_index > -1)
 			new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 		lp.set_rhs(rhs);
@@ -344,7 +362,8 @@ void Simplex::ans() {
 	}
 }
 
-string Simplex::name_of_var(const size_t &index_of_var, bool prim) const noexcept {
+std::string Simplex::name_of_var(const size_t &index_of_var, bool prim) const noexcept
+{
 	if(index_of_var < number_of_x) {
 		if(prim)
 			return "X" + std::to_string(index_of_var + 1);
@@ -358,7 +377,8 @@ string Simplex::name_of_var(const size_t &index_of_var, bool prim) const noexcep
 		return "NaN";
 }
 
-void Simplex::print_table() {
+void Simplex::print_table()
+{
 	const size_t NUMBER_OF_ROW = 4 + lp.get_number_of_line();
 	const size_t NUMBER_OF_COLUMN = 3 + lp.get_number_of_x();
 	PrintTable table(NUMBER_OF_ROW, PrintRow(NUMBER_OF_COLUMN, ""));
@@ -374,8 +394,8 @@ void Simplex::print_table() {
 	size_t size_first_column = set_first_and_second_column_for_print(table, row_for_print, 0);
 	size_t size_second_column = set_first_and_second_column_for_print(table, row_for_print, 1);
 
-	row_for_print[NUMBER_OF_LINE_PRINT - 2] += print_string_column(table.back()[0],
-		size_first_column + size_second_column + 3);
+	row_for_print[NUMBER_OF_LINE_PRINT - 2] +=
+	    print_string_column(table.back()[0], size_first_column + size_second_column + 3);
 	row_for_print[NUMBER_OF_LINE_PRINT - 2] += PRINT_VERTICAL;
 
 	for(int i = 2; i < lp.get_number_of_x() + 2; ++i)
@@ -385,16 +405,18 @@ void Simplex::print_table() {
 	set_last_column_table_for_print(table, row_for_print);
 
 	for(auto &row: row_for_print)
-		cout << row << endl;
+		std::cout << row << std::endl;
 }
 
-void Simplex::generate_first_row_of_table_for_print(PrintTable &table) const noexcept {
+void Simplex::generate_first_row_of_table_for_print(PrintTable &table) const noexcept
+{
 	auto &first_row = table[0];
 	for(int i = 2; i < first_row.size() - 1; ++i)
 		first_row[i] = lp.z_at(i - 2);
 }
 
-void Simplex::generate_second_row_of_table_for_print(PrintTable &table) const noexcept {
+void Simplex::generate_second_row_of_table_for_print(PrintTable &table) const noexcept
+{
 
 	auto &second_row = table[1];
 	second_row[0] = "Cb";
@@ -402,27 +424,30 @@ void Simplex::generate_second_row_of_table_for_print(PrintTable &table) const no
 	second_row.back() = "RHS";
 }
 
-void Simplex::generate_thread_row_of_table_for_print(PrintTable &table) const noexcept {
+void Simplex::generate_thread_row_of_table_for_print(PrintTable &table) const noexcept
+{
 	auto &thread_row = table[2];
 	for(size_t index_of_var = 0; index_of_var < number_of_x + number_of_s + number_of_r; ++index_of_var)
 		thread_row[index_of_var + 2] = name_of_var(index_of_var);
 }
 
-void Simplex::generate_base_of_table_for_print(PrintTable &table) const noexcept {
+void Simplex::generate_base_of_table_for_print(PrintTable &table) const noexcept
+{
 	for(size_t index_row_of_base = 0; index_row_of_base < lp.get_number_of_line(); ++index_row_of_base) {
 		auto &row_of_base = table[index_row_of_base + 3];
 		row_of_base[0] = cb[index_row_of_base];
 		row_of_base[1] = name_of_var(cj[index_row_of_base]);
 
-		for(size_t index_column_of_base_table = 0;
-			index_column_of_base_table < lp.get_number_of_x(); ++index_column_of_base_table)
+		for(size_t index_column_of_base_table = 0; index_column_of_base_table < lp.get_number_of_x();
+		    ++index_column_of_base_table)
 			row_of_base[index_column_of_base_table + 2] = lp.table_at(index_row_of_base, index_column_of_base_table);
 
 		row_of_base.back() = lp.rhs_at(index_row_of_base);
 	}
 }
 
-void Simplex::generate_last_row_of_table_for_print(PrintTable &table) const noexcept {
+void Simplex::generate_last_row_of_table_for_print(PrintTable &table) const noexcept
+{
 	auto &last_row = table.back();
 	last_row[0] = "C_bar";
 	for(int index_of_c_br = 0; index_of_c_br < c_bar.size(); ++index_of_c_br)
@@ -431,7 +456,8 @@ void Simplex::generate_last_row_of_table_for_print(PrintTable &table) const noex
 }
 
 size_t Simplex::size_of_the_biggest_string_in_column_of_table_for_print(const Simplex::PrintTable &table,
-	size_t number_of_column) const noexcept {
+                                                                        size_t number_of_column) const noexcept
+{
 	size_t max_size = 0;
 	for(const PrintRow &row: table) {
 		size_t size_of_string = row[number_of_column].size();
@@ -441,7 +467,8 @@ size_t Simplex::size_of_the_biggest_string_in_column_of_table_for_print(const Si
 	return max_size;
 }
 
-void Simplex::set_start_table_for_print(Simplex::PrintRow &row_for_print) const noexcept {
+void Simplex::set_start_table_for_print(Simplex::PrintRow &row_for_print) const noexcept
+{
 	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
 	for(size_t i = 0; i < NUMBER_OF_LINE_PRINT; ++i) {
 		if(i == 0) {
@@ -460,26 +487,30 @@ void Simplex::set_start_table_for_print(Simplex::PrintRow &row_for_print) const 
 	}
 }
 
-string Simplex::print_string_column(const string &s, const size_t &size_of_result_string) const noexcept {
+std::string Simplex::print_string_column(const std::string &s, const size_t &size_of_result_string) const noexcept
+{
 	size_t size_of_str = s.size();
 	if(size_of_result_string < size_of_str)
 		return s;
 	size_t diff_size = size_of_result_string - size_of_str;
 	size_t first_space_size = diff_size / 2, last_space_size = (diff_size + 1) / 2;
-	string r;
+	std::string r;
 	put_specific_char(r, first_space_size);
 	r += s;
 	put_specific_char(r, last_space_size);
 	return r;
 }
 
-void Simplex::put_specific_char(string &str, size_t number_of_space, const string &specific_char) const noexcept {
+void Simplex::put_specific_char(std::string &str, size_t number_of_space,
+                                const std::string &specific_char) const noexcept
+{
 	for(int i = 0; i < number_of_space; ++i)
 		str += specific_char;
 }
 
 size_t Simplex::set_first_and_second_column_for_print(const Simplex::PrintTable &table,
-	Simplex::PrintRow &row_for_print, size_t index_col) const noexcept {
+                                                      Simplex::PrintRow &row_for_print, size_t index_col) const noexcept
+{
 	const size_t max_size = size_of_the_biggest_string_in_column_of_table_for_print(table, index_col);
 	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
 
@@ -496,7 +527,7 @@ size_t Simplex::set_first_and_second_column_for_print(const Simplex::PrintTable 
 		row_for_print[2] += PRINT_VERTICAL;
 	else
 		row_for_print[2] += " " + BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontalRight) +
-		                    BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
+		    BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 
 	put_specific_char(row_for_print[3], max_size);
 	row_for_print[3] += PRINT_VERTICAL;
@@ -512,24 +543,25 @@ size_t Simplex::set_first_and_second_column_for_print(const Simplex::PrintTable 
 	}
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 3)], max_size,
-		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	                  BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(
-		index_col == 1? TypeOfBoxDrawing::horizontalAndVertical: TypeOfBoxDrawing::horizontalDown);
+	    index_col == 1 ? TypeOfBoxDrawing::horizontalAndVertical : TypeOfBoxDrawing::horizontalDown);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
-		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	                  BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
-	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(
-		index_col == 1? TypeOfBoxDrawing::horizontalDown: TypeOfBoxDrawing::horizontal);
+	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] +=
+	    BOX_DRAWING_CHARACTERS.at(index_col == 1 ? TypeOfBoxDrawing::horizontalDown : TypeOfBoxDrawing::horizontal);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 
 	return max_size;
 }
 
 void Simplex::set_base_column_for_print(const Simplex::PrintTable &table, Simplex::PrintRow &row_for_print,
-	size_t index_col) const noexcept {
+                                        size_t index_col) const noexcept
+{
 	const size_t max_size = size_of_the_biggest_string_in_column_of_table_for_print(table, index_col);
 	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
 
@@ -554,18 +586,19 @@ void Simplex::set_base_column_for_print(const Simplex::PrintTable &table, Simple
 	}
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 3)], max_size,
-		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	                  BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 
 	row_for_print[(NUMBER_OF_LINE_PRINT - 2)] += print_string_column(table.back()[index_col], max_size);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 2)] += " ";
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
-		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	                  BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 }
 
-void Simplex::set_last_base_table_for_print(Simplex::PrintRow &row_for_print) const noexcept {
+void Simplex::set_last_base_table_for_print(Simplex::PrintRow &row_for_print) const noexcept
+{
 	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
 	for(size_t i = 0; i < NUMBER_OF_LINE_PRINT; ++i) {
 		if(i == 0) {
@@ -588,7 +621,8 @@ void Simplex::set_last_base_table_for_print(Simplex::PrintRow &row_for_print) co
 }
 
 void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
-	Simplex::PrintRow &row_for_print) const noexcept {
+                                              Simplex::PrintRow &row_for_print) const noexcept
+{
 	const size_t index_col = table[0].size() - 1;
 	const size_t max_size = size_of_the_biggest_string_in_column_of_table_for_print(table, index_col);
 	const size_t NUMBER_OF_LINE_PRINT = row_for_print.size();
@@ -616,7 +650,7 @@ void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
 	}
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 3)], max_size,
-		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	                  BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 3)] += BOX_DRAWING_CHARACTERS.at(horizontalLeft);
 
@@ -624,19 +658,19 @@ void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
 	row_for_print[NUMBER_OF_LINE_PRINT - 2] += PRINT_VERTICAL;
 
 	put_specific_char(row_for_print[(NUMBER_OF_LINE_PRINT - 1)], max_size,
-		BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
+	                  BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal));
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::horizontal);
 	row_for_print[(NUMBER_OF_LINE_PRINT - 1)] += BOX_DRAWING_CHARACTERS.at(TypeOfBoxDrawing::bottomRight);
-
 }
 
-void Simplex::print_ans() {
+void Simplex::print_ans()
+{
 	for(const auto &num: c_bar) {
 		if(lp.get_type_of_optimization() == LP::TypeOfOptimization::max && num > 0) {
-			cout << ColoredString::blue("the answer of LP is positive infinite!");
+			std::cout << ColoredString::blue("the answer of LP is positive infinite!");
 			return;
 		} else if(lp.get_type_of_optimization() == LP::TypeOfOptimization::min && num < 0) {
-			cout << ColoredString::blue("the answer of LP is negative infinite!");
+			std::cout << ColoredString::blue("the answer of LP is negative infinite!");
 			return;
 		}
 	}
@@ -644,7 +678,7 @@ void Simplex::print_ans() {
 	for(size_t i = 0; i < cj.size(); ++i) {
 		if(cj[i] >= number_of_x + number_of_s) {
 			if(!(lp.rhs_at(i) == 0)) {
-				cout << ColoredString::blue("this LP is not possible answer!");
+				std::cout << ColoredString::blue("this LP is not possible answer!");
 				return;
 			}
 		}
@@ -657,16 +691,17 @@ void Simplex::print_ans() {
 	}
 
 	if(number_of_zero > lp.get_number_of_line()) {
-		cout << ColoredString::blue("this has multi answers! one of answers is:\n");
+		std::cout << ColoredString::blue("this has multi answers! one of answers is:\n");
 	}
 	for(size_t i = 0; i < cj.size(); i++) {
-		cout << name_of_var(cj[i]) << " = " << LP::to_string(lp.rhs_at(i)) << endl;
+		std::cout << name_of_var(cj[i]) << " = " << LP::Coefficient::to_string(lp.rhs_at(i)) << std::endl;
 	}
 	print_transformers_ans();
 }
 
-LP::M Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept {
-	LP::M a = LP::M(1) / table[row][column];
+LP::Coefficient Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t row, size_t column) noexcept
+{
+	LP::Coefficient a = LP::Coefficient(1) / table[row][column];
 	for(auto &cell: table[row])
 		cell *= a;
 
@@ -697,15 +732,14 @@ LP::M Simplex::calculate_table(LP::TableType &table, LP::RHSesType &rhs, size_t 
 	return last_z_bar;
 }
 
-void Simplex::print_transformers_ans() const noexcept {
+void Simplex::print_transformers_ans() const noexcept
+{
 	Simplex::ListOfX xs(lp.get_number_of_x(), 0);
 	for(size_t i = 0; i < cj.size(); i++) {
 		xs[cj[i]] = lp.rhs_at(i);
 	}
-	cout << ColoredString::yellow("So answer is:") << endl;
+	std::cout << ColoredString::yellow("So answer is:") << std::endl;
 	for(size_t i = 0; i < transformers.size(); i++) {
-		cout << name_of_var(i, false) << " = " << LP::to_string(transformers[i](xs)) << endl;
+		std::cout << name_of_var(i, false) << " = " << LP::Coefficient::to_string(transformers[i](xs)) << std::endl;
 	}
 }
-
-

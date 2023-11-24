@@ -1,152 +1,183 @@
-#include <bits/stdc++.h>
-
 #include "LP.h"
+
+#include <algorithm>
+#include <map>
+#include <stdexcept>
+#include <string>
+
 #include "ColoredString.h"
+#include "MNumber.h"
 
-using namespace std;
-
-string LP::to_string(LP::TypeOfOptimization type) noexcept {
+std::string LP::to_string(LP::TypeOfOptimization type) noexcept
+{
 	switch(type) {
-		case TypeOfOptimization::min: return "min";
-		case TypeOfOptimization::max: return "max";
-		default: return "";
+	case TypeOfOptimization::min:
+		return "min";
+	case TypeOfOptimization::max:
+		return "max";
+	default:
+		return "";
 	}
 }
 
-string LP::to_string(LP::Sign s) noexcept {
+std::string LP::to_string(LP::Sign s) noexcept
+{
 	switch(s) {
-		case Sign::negative: return "<= 0";
-		case Sign::positive: return ">= 0";
-		case Sign::freeSign: return "free";
-		default: return "";
-
+	case Sign::negative:
+		return "<= 0";
+	case Sign::positive:
+		return ">= 0";
+	case Sign::freeSign:
+		return "free";
+	default:
+		return "";
 	}
 }
 
-string LP::to_string(LP::Comparative c) noexcept {
+std::string LP::to_string(LP::Comparative c) noexcept
+{
 	switch(c) {
-		case Comparative::lower: return "<=";
-		case Comparative::equal: return " =";
-		case Comparative::greater: return ">=";
-		default: return "";
+	case Comparative::lower:
+		return "<=";
+	case Comparative::equal:
+		return " =";
+	case Comparative::greater:
+		return ">=";
+	default:
+		return "";
 	}
-}
-
-string LP::to_string(LP::M m) noexcept {
-	return m;
 }
 
 LP::LP()
-	: number_of_x(0)
-	, number_of_line(0)
-	, type_of_optimization(TypeOfOptimization::max)
-	, z()
-	, table()
-	, b()
-	, comparatives()
-	, signs() {}
+: number_of_x(0)
+, number_of_line(0)
+, type_of_optimization(TypeOfOptimization::max)
+, z()
+, table()
+, rhses()
+, comparatives()
+, signs()
+{
+}
 
-LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
-	TableType table, RHSesType b, ComparativesType comparatives, SignsType signs)
-	: number_of_x(number_of_x)
-	, number_of_line(number_of_line)
-	, type_of_optimization(type_of_optimization)
-	, z(std::move(z))
-	, table(std::move(table))
-	, b(std::move(b))
-	, comparatives(std::move(comparatives))
-	, signs(std::move(signs)) {
+LP::LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z, TableType table,
+       RHSesType rhses, ComparativesType comparatives, SignsType signs)
+: number_of_x(number_of_x)
+, number_of_line(number_of_line)
+, type_of_optimization(type_of_optimization)
+, z(std::move(z))
+, table(std::move(table))
+, rhses(std::move(rhses))
+, comparatives(std::move(comparatives))
+, signs(std::move(signs))
+{
 	validate_z();
-	validate_b();
+	validate_rhses();
 	validate_table();
 	validate_comparatives();
 	validate_signs();
 }
 
-void LP::validate_table() const {
+void LP::validate_table() const
+{
 	if(this->table.size() != number_of_line)
-		throw runtime_error(ColoredString::red("Invalid size of table."));
+		throw std::runtime_error(ColoredString::red("Invalid size of table."));
 	for(auto &t: this->table)
 		if(t.size() != number_of_x)
-			throw runtime_error(ColoredString::red("Invalid size of table."));
+			throw std::runtime_error(ColoredString::red("Invalid size of table."));
 }
 
-void LP::validate_b() const {
-	if(this->b.size() != number_of_line)
-		throw runtime_error(ColoredString::red("Invalid size of right hand side."));
+void LP::validate_rhses() const
+{
+	if(this->rhses.size() != number_of_line)
+		throw std::runtime_error(ColoredString::red("Invalid size of right hand side."));
 }
 
-void LP::validate_z() const {
+void LP::validate_z() const
+{
 	if(this->z.size() != number_of_x)
-		throw runtime_error(ColoredString::red("Invalid size of z."));
+		throw std::runtime_error(ColoredString::red("Invalid size of z."));
 }
 
-void LP::validate_comparatives() const {
+void LP::validate_comparatives() const
+{
 	if(this->comparatives.size() != number_of_line)
-		throw runtime_error(ColoredString::red("Invalid size of comparatives."));
-
+		throw std::runtime_error(ColoredString::red("Invalid size of comparatives."));
 }
 
-void LP::validate_signs() const {
+void LP::validate_signs() const
+{
 	if(this->signs.size() != number_of_x)
-		throw runtime_error(ColoredString::red("Invalid size of signs."));
-
+		throw std::runtime_error(ColoredString::red("Invalid size of signs."));
 }
 
-size_t LP::get_number_of_x() const noexcept {
+size_t LP::get_number_of_x() const noexcept
+{
 	return number_of_x;
 }
 
-size_t LP::get_number_of_line() const noexcept {
+size_t LP::get_number_of_line() const noexcept
+{
 	return number_of_line;
 }
 
-LP::TypeOfOptimization LP::get_type_of_optimization() const noexcept {
+LP::TypeOfOptimization LP::get_type_of_optimization() const noexcept
+{
 	return type_of_optimization;
 }
 
-auto LP::get_z() const noexcept -> ZType {
+LP::ZType LP::get_z() const noexcept
+{
 	return z;
 }
 
-LP::Coefficient LP::z_at(size_t index) const noexcept {
+LP::Coefficient LP::z_at(size_t index) const noexcept
+{
 	return z[index];
 }
 
-auto LP::get_table() const noexcept -> TableType {
+LP::TableType LP::get_table() const noexcept
+{
 	return table;
 }
 
-LP::CellOfTable LP::table_at(size_t number_of_row, size_t number_of_column) const noexcept {
+LP::CellOfTable LP::table_at(size_t number_of_row, size_t number_of_column) const noexcept
+{
 	return table[number_of_row][number_of_column];
 }
 
-
-auto LP::get_rhs() const noexcept -> RHSesType {
-	return b;
+LP::RHSesType LP::get_rhs() const noexcept
+{
+	return rhses;
 }
 
-LP::Coefficient LP::rhs_at(size_t index) const noexcept {
-	return b[index];
+LP::Coefficient LP::rhs_at(size_t index) const noexcept
+{
+	return rhses[index];
 }
 
-auto LP::get_comparatives() const noexcept -> ComparativesType {
+LP::ComparativesType LP::get_comparatives() const noexcept
+{
 	return comparatives;
 }
 
-LP::Comparative LP::comparative_at(size_t index) const noexcept {
+LP::Comparative LP::comparative_at(size_t index) const noexcept
+{
 	return comparatives[index];
 }
 
-auto LP::get_signs() const noexcept -> SignsType {
+LP::SignsType LP::get_signs() const noexcept
+{
 	return signs;
 }
 
-LP::Sign LP::sign_at(size_t index) const noexcept {
+LP::Sign LP::sign_at(size_t index) const noexcept
+{
 	return signs[index];
 }
 
-void LP::set_number_of_x(size_t num) {
+void LP::set_number_of_x(size_t num)
+{
 	number_of_x = num;
 	for(auto &t: table)
 		t.resize(num);
@@ -154,226 +185,128 @@ void LP::set_number_of_x(size_t num) {
 	signs.resize(num);
 }
 
-void LP::set_number_of_line(size_t num) {
+void LP::set_number_of_line(size_t num)
+{
 	number_of_line = num;
 	table.resize(num);
 	for(auto &t: table)
 		t.resize(number_of_x);
-	b.resize(num);
+	rhses.resize(num);
 	comparatives.resize(num);
 }
 
-void LP::set_type_of_optimization(LP::TypeOfOptimization type) {
+void LP::set_type_of_optimization(LP::TypeOfOptimization type)
+{
 	type_of_optimization = type;
 }
 
-void LP::set_z(const LP::ZType &other_z) {
+void LP::set_z(const LP::ZType &other_z)
+{
 	z = other_z;
 	validate_z();
 }
 
-void LP::set_table(const LP::TableType &t) {
+void LP::set_table(const LP::TableType &t)
+{
 	table = t;
 	validate_table();
 }
 
-void LP::set_rhs(const LP::RHSesType &rhs) {
-	b = rhs;
-	validate_b();
+void LP::set_rhs(const LP::RHSesType &rhs)
+{
+	rhses = rhs;
+	validate_rhses();
 }
 
-void LP::set_comparatives(const LP::ComparativesType &c) {
+void LP::set_comparatives(const LP::ComparativesType &c)
+{
 	comparatives = c;
 	validate_comparatives();
 }
 
-void LP::set_signs(const LP::SignsType &s) {
+void LP::set_signs(const LP::SignsType &s)
+{
 	signs = s;
 	validate_signs();
 }
 
-
-LP::M::M()
-	: inf(0)
-	, num(0) {}
-
-LP::M::M(double num)
-	: inf(0)
-	, num(num) {}
-
-LP::M::M(double inf, double num)
-	: inf(inf)
-	, num(num) {}
-
-
-LP::M::M(const LP::M &other)
-	: inf(other.inf)
-	, num(other.num) {}
-
-LP::M::M(LP::M &&other) noexcept
-	: inf(other.inf)
-	, num(other.num) {}
-
-LP::M &LP::M::operator=(const double &other) {
-	inf = 0;
-	num = other;
-	return *this;
+std::string LP::to_string(const std::string &name_of_var) const noexcept
+{
+	std::string result;
+	result += z_to_string(name_of_var);
+	result += body_to_string(name_of_var);
+	result += signs_to_string(name_of_var);
+	return result;
 }
 
-LP::M &LP::M::operator=(const LP::M &other) {
-	inf = other.inf;
-	num = other.num;
-	return *this;
+std::string LP::z_to_string(const std::string &name_of_var) const noexcept
+{
+	std::string result;
+	result += ColoredString::yellow(to_string(type_of_optimization)) + " ";
+	for(int i = 0; i < z.size(); ++i) {
+		if(z[i] == 0)
+			continue;
+		std::string z_str = (std::string)z[i] + name_of_var + std::to_string(i + 1);
+		if(!z_str.starts_with('-'))
+			result += ColoredString::blue("+");
+		result += ColoredString::blue(z_str + " ");
+	}
+	result += '\n';
+	return result;
 }
 
-LP::M &LP::M::operator=(LP::M &&other) noexcept {
-	inf = other.inf;
-	num = other.num;
-	return *this;
-}
-
-LP::M LP::M::operator+(const LP::M &obj) const noexcept {
-	return {inf + obj.inf, num + obj.num};
-}
-
-LP::M LP::M::operator+(const double &obj) const noexcept {
-	return *this + M(obj);
-}
-
-LP::M LP::M::operator+=(const LP::M &obj) noexcept {
-	inf += obj.inf;
-	num += obj.num;
-	return *this;
-}
-
-LP::M LP::M::operator+=(const double &obj) noexcept {
-	num += obj;
-	return *this;
-}
-
-LP::M LP::M::operator-() const noexcept {
-	return {-inf, -num};
-}
-
-LP::M LP::M::operator-(const LP::M &obj) const noexcept {
-	return *this + (-obj);
-}
-
-LP::M LP::M::operator-(const double &obj) const noexcept {
-	return *this - M(obj);;
-}
-
-LP::M &LP::M::operator-=(const LP::M &obj) noexcept {
-	inf -= obj.inf;
-	num -= obj.num;
-	return *this;
-}
-
-LP::M &LP::M::operator-=(const double &obj) noexcept {
-	num -= obj;
-	return *this;
-}
-
-bool LP::M::operator==(const LP::M &other) const noexcept {
-	return (num == other.num) && (inf == other.inf);
-}
-
-bool LP::M::operator==(const double &other) const noexcept {
-	return (num == other) && (inf == 0);
-}
-
-bool LP::M::operator>(const LP::M &other) const noexcept {
-	return (inf > other.inf) || ((inf == other.inf) && (num > other.num));
-}
-
-bool LP::M::operator>(const double &other) const noexcept {
-	return *this > M(other);
-}
-
-bool LP::M::operator>=(const LP::M &other) const noexcept {
-	return (*this > other) || (*this == other);
-}
-
-bool LP::M::operator>=(const double &other) const noexcept {
-	return *this >= M(other);
-}
-
-bool LP::M::operator<(const LP::M &other) const noexcept {
-	return !(*this >= other);
-}
-
-bool LP::M::operator<(const double &other) const noexcept {
-	return *this < M(other);
-}
-
-bool LP::M::operator<=(const LP::M &other) const noexcept {
-	return !(*this > other);
-}
-
-bool LP::M::operator<=(const double &other) const noexcept {
-	return *this <= M(other);
-}
-
-LP::M::operator string() const noexcept {
-	string s;
-	const auto to_string = [](const double &d) -> string {
-		string num_text = std::to_string(d);
-		auto r =  num_text.substr(0, num_text.find('.') + 3);
-		while(r.back() != '.'){
-			if(r.back() == '0')
-				r.pop_back();
-			else
-				break;
+std::string LP::body_to_string(const std::string &name_of_var) const noexcept
+{
+	std::string result;
+	std::vector<std::string> rows(number_of_line, "");
+	for(int column_index = 0; column_index < number_of_x; ++column_index) {
+		std::vector<std::string> column(number_of_line);
+		for(int row_index = 0; row_index < number_of_line; row_index++) {
+			if(table[row_index][column_index] == 0) {
+				column[row_index] = "";
+				continue;
+			} else if(!std::string(table[row_index][column_index]).starts_with('-'))
+				column[row_index] = "+";
+			column[row_index] +=
+			    std::string(table[row_index][column_index]) + name_of_var + std::to_string(column_index + 1);
 		}
-		if(r.back() == '.')
-			r.pop_back();
-		return r;
-	};
 
-	if(inf != 0)
-		s += to_string(inf) + "M";
+		size_t maxStringLength = (*std::ranges::max_element(column, [](const auto &a, const auto &b) {
+			                         return a.length() < b.length();
+		                         })).length();
 
-	if(num != 0) {
-		if(num > 0 && inf != 0)
-			s += "+";
-		s += to_string(num);
+		const auto generate_space = [](size_t num) {
+			std::string s;
+			for(size_t i = 0; i < num; ++i)
+				s += " ";
+			return s;
+		};
+		for(int row_index = 0; row_index < number_of_line; row_index++)
+			rows[row_index] += generate_space(maxStringLength - column[row_index].length()) + column[row_index] + " ";
 	}
 
-	if(s.empty())
-		s += std::to_string(0);
-	return s;
+	for(int row_index = 0; row_index < number_of_line; row_index++)
+		result += ColoredString::green(rows[row_index]) + ColoredString::yellow(to_string(comparatives[row_index])) +
+		    " " + ColoredString::green(Coefficient::to_string(rhses[row_index])) + '\n';
+
+	return result;
 }
 
-LP::M LP::M::operator*(const LP::M &obj) const {
-	if(inf == 0)
-		return obj * num;
-	else if(obj.inf == 0)
-		return *this * obj.num;
-	else
-		throw std::runtime_error(ColoredString::red("M * M must be one of they inf equal to 0"));
-}
+std::string LP::signs_to_string(const std::string &name_of_var) const noexcept
+{
+	std::string result;
+	std::map<LP::Sign, std::vector<size_t>> sign;
+	for(size_t i = 0; i < number_of_x; i++)
+		sign[signs[i]].emplace_back(i);
 
-LP::M LP::M::operator*(const double &obj) const noexcept {
-	return {inf * obj, num * obj};
-}
+	for(const auto &s1: sign) {
+		std::string s;
+		for(const auto &s2: s1.second)
+			s += name_of_var + std::to_string(s2 + 1) + ", ";
+		s.pop_back();
+		s.pop_back();
+		result += ColoredString::magenta(s) + " " + ColoredString::magenta(LP::to_string(s1.first)) + '\n';
+	}
 
-LP::M LP::M::operator*=(const LP::M &obj) {
-	*this = *this * obj;
-	return *this;
-}
-
-LP::M LP::M::operator*=(const double &obj) noexcept {
-	*this = *this * obj;
-	return *this;
-}
-
-LP::M LP::M::operator/(const LP::M &obj) const {
-	if(obj.inf == 0)
-		return *this / obj.num;
-	else
-		throw std::runtime_error(ColoredString::red("M1 / M2 must be M2 inf equal to 0"));
-}
-
-LP::M LP::M::operator/(const double &obj) const noexcept {
-	return {inf / obj, num / obj};
+	return result;
 }

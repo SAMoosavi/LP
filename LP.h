@@ -1,44 +1,53 @@
 #ifndef LP_LP_H
 #define LP_LP_H
 
-#include <bits/stdc++.h>
+#include <string>
+#include <vector>
 
-using namespace std;
+#include "MNumber.h"
 
 /// Save linear programing information
-class LP {
+class LP
+{
 public:
-	class M;
-
-	enum TypeOfOptimization {
-		min = 0, max = 1
+	enum TypeOfOptimization
+	{
+		min = 0,
+		max = 1
 	};
 
-	enum Sign {
+	enum Sign
+	{
 		negative = -1,
 		freeSign = 0,
 		positive = 1
 	};
 
-	enum Comparative {
+	enum Comparative
+	{
 		lower = -1,
 		equal = 0,
 		greater = 1
 	};
 
-	typedef M Coefficient;
-	typedef vector<Coefficient> ZType;
-	typedef vector<Coefficient> RHSesType;
+	typedef MNumber<double> Coefficient;
+	typedef std::vector<Coefficient> ZType;
+	typedef std::vector<Coefficient> RHSesType;
 	typedef Coefficient CellOfTable;
-	typedef vector<CellOfTable> RowOfTable;
-	typedef vector<RowOfTable> TableType;
-	typedef vector<Comparative> ComparativesType;
-	typedef vector<Sign> SignsType;
+	typedef std::vector<CellOfTable> RowOfTable;
+	typedef std::vector<RowOfTable> TableType;
+	typedef std::vector<Comparative> ComparativesType;
+	typedef std::vector<Sign> SignsType;
 
 	LP();
 
-	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
-		TableType table, RHSesType b, ComparativesType comparatives, SignsType signs);
+	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z, TableType table,
+	   RHSesType rhses, ComparativesType comparatives, SignsType signs);
+
+	LP(const LP &lp) = default;
+	LP(LP &&lp) = default;
+	LP &operator=(const LP &lp) = default;
+	LP &operator=(LP &&lp) = default;
 
 	void set_number_of_x(size_t num);
 	size_t get_number_of_x() const noexcept;
@@ -69,77 +78,17 @@ public:
 	SignsType get_signs() const noexcept;
 	Sign sign_at(size_t index) const noexcept;
 
-	static string to_string(TypeOfOptimization type) noexcept;
-
-	static string to_string(Sign s) noexcept;
-
-	static string to_string(Comparative c) noexcept;
-
-	static string to_string(M m) noexcept;
-
-	class M {
-	public:
-		M();
-		M(double num);
-		M(double inf, double num);
-
-		M(const M &other);
-		M(M &&other) noexcept;
-
-		M &operator=(const M &other);
-		M &operator=(const double &other);
-		M &operator=(M &&other) noexcept;
-
-		M operator+(const M &obj) const noexcept;
-		M operator+(const double &obj) const noexcept;
-
-		M operator+=(const M &obj) noexcept;
-		M operator+=(const double &obj) noexcept;
-
-		M operator*(const M &obj) const;
-		M operator*(const double &obj) const noexcept;
-
-		M operator*=(const M &obj);
-		M operator*=(const double &obj) noexcept;
-
-		M operator/(const M &obj) const;
-		M operator/(const double &obj) const noexcept;
-
-		M operator-() const noexcept;
-
-		M operator-(const M &obj) const noexcept;
-		M operator-(const double &obj) const noexcept;
-
-		M &operator-=(const M &obj) noexcept;
-		M &operator-=(const double &obj) noexcept;
-
-		bool operator==(const M &other) const noexcept;
-		bool operator==(const double &other) const noexcept;
-
-		bool operator>(const M &other) const noexcept;
-		bool operator>(const double &other) const noexcept;
-
-		bool operator>=(const M &other) const noexcept;
-		bool operator>=(const double &other) const noexcept;
-
-		bool operator<(const M &other) const noexcept;
-		bool operator<(const double &other) const noexcept;
-
-		bool operator<=(const M &other) const noexcept;
-		bool operator<=(const double &other) const noexcept;
-
-		operator string() const noexcept;
-	private:
-		double inf;
-		double num;
-	};
+	static std::string to_string(TypeOfOptimization type) noexcept;
+	static std::string to_string(Sign s) noexcept;
+	static std::string to_string(Comparative c) noexcept;
+	std::string to_string(const std::string &name_of_var) const noexcept;
 
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x
 	void validate_table() const;
 
-	/// Check size of @c b is @c number_of_line
-	void validate_b() const;
+	/// Check size of @c rhses is @c number_of_line
+	void validate_rhses() const;
 
 	/// Check size of @c comparatives is @c number_of_line
 	void validate_comparatives() const;
@@ -150,15 +99,18 @@ private:
 	/// Check size of @c z is @c number_of_x
 	void validate_z() const;
 
+	std::string z_to_string(const std::string &name_of_var) const noexcept;
+	std::string body_to_string(const std::string &name_of_var) const noexcept;
+	std::string signs_to_string(const std::string &name_of_var) const noexcept;
+
 	size_t number_of_x;
 	size_t number_of_line;
 	TypeOfOptimization type_of_optimization;
 	ZType z;
 	TableType table;
-	RHSesType b;
+	RHSesType rhses;
 	ComparativesType comparatives;
 	SignsType signs;
 };
-
 
 #endif

@@ -3,24 +3,22 @@
 
 #include <string>
 
-using std::string;
-
-class ColoredString {
+class ColoredString
+{
 public:
 	ColoredString() = delete;
 
-	static string red(const string & s) noexcept;
+	static std::string red(const std::string &s) noexcept;
 
-	static string green(const string & s) noexcept;
+	static std::string green(const std::string &s) noexcept;
 
-	static string yellow(const string & s) noexcept;
+	static std::string yellow(const std::string &s) noexcept;
 
-	static string blue(const string & s) noexcept;
+	static std::string blue(const std::string &s) noexcept;
 
-	static string magenta(const string & s) noexcept;
+	static std::string magenta(const std::string &s) noexcept;
 
-	static string white(const string & s) noexcept;
+	static std::string white(const std::string &s) noexcept;
 };
-
 
 #endif
