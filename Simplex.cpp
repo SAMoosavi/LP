@@ -641,10 +641,12 @@ void Simplex::print_ans() {
 		}
 	}
 
-	for(const auto &index: cj) {
-		if(index >= number_of_x + number_of_s) {
-			cout << ColoredString::blue("this LP is not possible answer!");
-			return;
+	for(size_t i = 0; i < cj.size(); ++i) {
+		if(cj[i] >= number_of_x + number_of_s) {
+			if(!(lp.rhs_at(i) == 0)) {
+				cout << ColoredString::blue("this LP is not possible answer!");
+				return;
+			}
 		}
 	}
 
