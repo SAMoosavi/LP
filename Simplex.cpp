@@ -38,11 +38,11 @@ Simplex::Simplex(const LP &last_lp)
 			auto signs = lp.get_signs();
 			auto comparatives = lp.get_comparatives();
 
-			for(auto& row : table)
+			for(auto &row: table)
 				row.emplace_back(0);
 
 			table.emplace_back(lp.get_number_of_x() + 1, 0);
-			for(size_t i = number_of_x + number_of_s; i < number_of_x + number_of_s + number_of_r ;++i)
+			for(size_t i = number_of_x + number_of_s; i < number_of_x + number_of_s + number_of_r; ++i)
 				table.back()[i] = 1;
 
 			rhs.emplace_back(0);
@@ -50,11 +50,11 @@ Simplex::Simplex(const LP &last_lp)
 			comparatives.emplace_back(LP::Comparative::equal);
 			last_z.emplace_back(0);
 			auto rb_last_z = last_z.rbegin();
-			for(int i = 0; i < number_of_r; ++i,++rb_last_z)
+			for(int i = 0; i < number_of_r; ++i, ++rb_last_z)
 				*rb_last_z = 0;
 
 			lp.set_number_of_x(number_of_x + number_of_s + number_of_r);
-			lp.set_number_of_line(lp.get_number_of_line()+1);
+			lp.set_number_of_line(lp.get_number_of_line() + 1);
 			lp.set_z(last_z);
 			lp.set_type_of_optimization(last_type_of_optimization);
 			lp.set_table(table);
@@ -62,7 +62,7 @@ Simplex::Simplex(const LP &last_lp)
 			lp.set_signs(signs);
 			lp.set_comparatives(comparatives);
 
-			cj.push_back(lp.get_number_of_x()-1);
+			cj.push_back(lp.get_number_of_x() - 1);
 			ans();
 			print_table();
 		}
