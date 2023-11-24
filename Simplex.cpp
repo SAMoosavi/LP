@@ -26,7 +26,7 @@ Simplex::Simplex(LP last_lp) {
 			print_table();
 
 
-			if(z_bar != 0) {
+			if(!(z_bar == 0)) {
 				cout << "R exist in base so don't has answer." << endl;
 				return;
 			}
