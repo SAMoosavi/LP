@@ -10,7 +10,8 @@ template<typename T>
 concept FloatingPoint = std::is_floating_point_v<T>;
 
 template<Arithmetic BaseNumber>
-class MNumber {
+class MNumber
+{
 public:
 	inline MNumber();
 
@@ -30,33 +31,33 @@ public:
 
 	inline MNumber<BaseNumber> operator+(const MNumber<BaseNumber> &obj) const noexcept;
 
-	inline MNumber<BaseNumber> operator+(const BaseNumber &obj) const noexcept;
+	inline MNumber<BaseNumber> operator+(const BaseNumber &other_num) const noexcept;
 
 	inline MNumber<BaseNumber> operator+=(const MNumber<BaseNumber> &obj) noexcept;
 
-	inline MNumber<BaseNumber> operator+=(const BaseNumber &obj) noexcept;
+	inline MNumber<BaseNumber> operator+=(const BaseNumber &other_num) noexcept;
 
 	inline MNumber<BaseNumber> operator*(const MNumber<BaseNumber> &obj) const;
 
-	inline MNumber<BaseNumber> operator*(const BaseNumber &obj) const noexcept;
+	inline MNumber<BaseNumber> operator*(const BaseNumber &other_num) const noexcept;
 
 	inline MNumber<BaseNumber> operator*=(const MNumber<BaseNumber> &obj);
 
-	inline MNumber<BaseNumber> operator*=(const BaseNumber &obj) noexcept;
+	inline MNumber<BaseNumber> operator*=(const BaseNumber &other_num) noexcept;
 
 	inline MNumber<BaseNumber> operator/(const MNumber<BaseNumber> &obj) const;
 
-	inline MNumber<BaseNumber> operator/(const BaseNumber &obj) const noexcept;
+	inline MNumber<BaseNumber> operator/(const BaseNumber &other_num) const noexcept;
 
 	inline MNumber<BaseNumber> operator-() const noexcept;
 
 	inline MNumber<BaseNumber> operator-(const MNumber<BaseNumber> &obj) const noexcept;
 
-	inline MNumber<BaseNumber> operator-(const BaseNumber &obj) const noexcept;
+	inline MNumber<BaseNumber> operator-(const BaseNumber &other_num) const noexcept;
 
 	inline MNumber<BaseNumber> &operator-=(const MNumber<BaseNumber> &obj) noexcept;
 
-	inline MNumber<BaseNumber> &operator-=(const BaseNumber &obj) noexcept;
+	inline MNumber<BaseNumber> &operator-=(const BaseNumber &other_num) noexcept;
 
 	inline bool operator==(const MNumber<BaseNumber> &other) const noexcept;
 

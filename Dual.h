@@ -1,32 +1,31 @@
 #ifndef LP_DUAL_H
 #define LP_DUAL_H
 
-#include <bits/stdc++.h>
-#include "InputLP.h"
-#include "ColoredString.h"
+#include "LP.h"
 
-using namespace std;
-
-class Dual {
+class Dual
+{
 public:
 	Dual(LP lp);
 
+	LP get_dual_lp() const noexcept;
+	LP get_primal_lp() const noexcept;
+
 private:
 	/// This function calculates transpose of @c table.
-	LP::TableType Transpose(const LP::TableType &table);
+	LP::TableType calculate_table_of_dual() const noexcept;
 
 	/// This function gets comparatives of lines and creates signs of dual variables.
-	LP::SignsType ComparativeToSign(const LP::ComparativesType &as, size_t num,
-		LP::TypeOfOptimization type_of_optimization);
+	LP::SignsType calculate_signs_of_dual() const noexcept;
 
 	/// This function gets sings of variables and creates comparatives of dual lines.
-	LP::ComparativesType SignToComparative(const LP::SignsType &r, size_t num,
-		LP::TypeOfOptimization type_of_optimization);
+	LP::ComparativesType calculate_comparative_of_dual() const noexcept;
 
 	/// This function swaps max to min(or min to max).
-	LP::TypeOfOptimization change_type_of_optimization(LP::TypeOfOptimization type);
+	LP::TypeOfOptimization calculate_type_of_optimization_dual() const noexcept;
 
 	LP dual_lp;
+	LP primal_lp;
 };
 
 #endif

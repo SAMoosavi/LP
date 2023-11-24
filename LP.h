@@ -1,25 +1,30 @@
 #ifndef LP_LP_H
 #define LP_LP_H
 
+#include <string>
+#include <vector>
+
 #include "MNumber.h"
 
-#include <vector>
-#include <string>
-
 /// Save linear programing information
-class LP {
+class LP
+{
 public:
-	enum TypeOfOptimization {
-		min = 0, max = 1
+	enum TypeOfOptimization
+	{
+		min = 0,
+		max = 1
 	};
 
-	enum Sign {
+	enum Sign
+	{
 		negative = -1,
 		freeSign = 0,
 		positive = 1
 	};
 
-	enum Comparative {
+	enum Comparative
+	{
 		lower = -1,
 		equal = 0,
 		greater = 1
@@ -36,8 +41,13 @@ public:
 
 	LP();
 
-	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z,
-		TableType table, RHSesType rhses, ComparativesType comparatives, SignsType signs);
+	LP(size_t number_of_x, size_t number_of_line, TypeOfOptimization type_of_optimization, ZType z, TableType table,
+	   RHSesType rhses, ComparativesType comparatives, SignsType signs);
+
+	LP(const LP &lp) = default;
+	LP(LP &&lp) = default;
+	LP &operator=(const LP &lp) = default;
+	LP &operator=(LP &&lp) = default;
 
 	void set_number_of_x(size_t num);
 	size_t get_number_of_x() const noexcept;
@@ -71,7 +81,7 @@ public:
 	static std::string to_string(TypeOfOptimization type) noexcept;
 	static std::string to_string(Sign s) noexcept;
 	static std::string to_string(Comparative c) noexcept;
-	std::string to_string(const std::string& name_of_var) const noexcept;
+	std::string to_string(const std::string &name_of_var) const noexcept;
 
 private:
 	/// Check size of @c table is @c number_of_line * @c number_of_x
@@ -102,6 +112,5 @@ private:
 	ComparativesType comparatives;
 	SignsType signs;
 };
-
 
 #endif

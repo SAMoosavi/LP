@@ -3,7 +3,8 @@
 
 #include <string>
 
-class ColoredString {
+class ColoredString
+{
 public:
 	ColoredString() = delete;
 
@@ -19,6 +20,5 @@ public:
 
 	static std::string white(const std::string &s) noexcept;
 };
-
 
 #endif

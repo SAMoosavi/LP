@@ -1,12 +1,12 @@
 #ifndef LP_INPUTLP_H
 #define LP_INPUTLP_H
 
-#include <bits/stdc++.h>
+#include <cstddef>
+
 #include "LP.h"
 
-using namespace std;
-
-class InputLP {
+class InputLP
+{
 public:
 	InputLP() = default;
 
@@ -23,7 +23,7 @@ private:
 
 	void input_lines();
 
-	void input_line(size_t row_number, LP::TableType & table, LP::ComparativesType & comparatives, LP::RHSesType & b);
+	void input_line(size_t row_number, LP::TableType &table, LP::ComparativesType &comparatives, LP::RHSesType &b);
 
 	void input_signs();
 
