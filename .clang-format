@@ -37,7 +37,7 @@ IncludeCategories:
     Priority: 2
   - Regex: '^<([A-Za-z0-9_]*\.h)>'
     Priority: 3
-  - Regex: '^([A-Za-z0-9_])*\.h'
+  - Regex: '([A-Za-z0-9_])*\.h'
     Priority: 4
 BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
