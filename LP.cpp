@@ -223,7 +223,7 @@ std::string LP::body_to_string(const std::string &name_of_var) const noexcept {
 			} else if(!std::string(table[row_index][column_index]).starts_with('-'))
 				column[row_index] = "+";
 			column[row_index] += std::string(table[row_index][column_index]) + name_of_var
-			                     + std::to_string(row_index + 1);
+			                     + std::to_string(column_index + 1);
 		}
 
 		size_t maxStringLength =

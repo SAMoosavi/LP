@@ -58,6 +58,8 @@ private:
 
 	void ans();
 
+	ssize_t select_column() const noexcept;
+
 	string name_of_var(const size_t &index_of_var,bool prim = true) const noexcept;
 
 	void generate_first_row_of_table_for_print(PrintTable &table) const noexcept;

@@ -27,11 +27,9 @@ Simplex::Simplex(LP last_lp) {
 			print_table();
 
 
-			for(const auto &index: cj) {
-				if(index >= number_of_x + number_of_s) {
-					cout << name_of_var(index) << " exist in base so don't has answer." << endl;
-					return;
-				}
+			if(z_bar != 0) {
+				cout << "R exist in base so don't has answer." << endl;
+				return;
 			}
 
 			auto table = lp.get_table();
@@ -40,22 +38,12 @@ Simplex::Simplex(LP last_lp) {
 					row.pop_back();
 			}
 
-			LP new_lp;
-			new_lp.set_number_of_x(lp.get_number_of_x() - number_of_r);
-			new_lp.set_number_of_line(lp.get_number_of_line());
-			new_lp.set_type_of_optimization(last_type_of_optimization);
-			new_lp.set_comparatives(lp.get_comparatives());
-			new_lp.set_rhs(lp.get_rhs());
-			new_lp.set_table(table);
-			auto signs = lp.get_signs();
-			for(int i = 0; i < number_of_r; ++i) {
-				last_z.pop_back();
-				signs.pop_back();
-			}
-			new_lp.set_signs(signs);
-			new_lp.set_z(last_z);
-			lp = new_lp;
-
+			lp.set_type_of_optimization(last_type_of_optimization);
+			auto rb_last_z = last_z.rbegin();
+			for(int i = 0; i <number_of_r; ++i,++rb_last_z)
+				*rb_last_z = 0;
+			lp.set_z(last_z);
+std::cout << LP::to_string(last_type_of_optimization) << std::endl;
 			ans();
 			print_table();
 
@@ -297,18 +285,27 @@ ssize_t min_test(const vector<T> &column, const vector<T> &rhs) {
 	return min_index;
 }
 
+
+ssize_t Simplex::select_column() const noexcept {
+	return lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);;
+}
+
 void Simplex::ans() {
 	cb.clear();
-	cj.clear();
 	c_bar.clear();
 	auto table = lp.get_table();
-	for(const auto &row: table) {
-		for(size_t i = number_of_x; i < row.size(); ++i) {
-			if(row[i] == 1) {
-				cj.push_back(i);
-				cb.push_back(lp.z_at(i));
+	if(cj.empty()) {
+		for(const auto &row: table) {
+			for(size_t i = number_of_x; i < row.size(); ++i) {
+				if(row[i] == 1) {
+					cj.push_back(i);
+					cb.push_back(lp.z_at(i));
+				}
 			}
 		}
+	} else {
+		for(const auto &i: cj)
+			cb.push_back(lp.z_at(i));
 	}
 
 	z_bar = cb * lp.get_rhs();
@@ -317,18 +314,15 @@ void Simplex::ans() {
 		c_bar.push_back(lp.z_at(i) - cb * t_table[i]);
 
 	auto rhs = lp.get_rhs();
-	ssize_t new_base_column_index =
-		lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
+	ssize_t new_base_column_index = select_column();
 	ssize_t new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 	while(new_base_column_index > -1 && new_base_row_index > -1) {
 		print_table();
 
 		auto last_z_bar = calculate_table(table, rhs, new_base_row_index, new_base_column_index);
-		if(z_bar == last_z_bar)
-			break;
 
 		t_table = Transpose(table);
-		new_base_column_index = lp.get_type_of_optimization() == LP::TypeOfOptimization::max? max(c_bar): min(c_bar);
+		new_base_column_index = select_column();
 		if(new_base_column_index > -1)
 			new_base_row_index = min_test(t_table[new_base_column_index], rhs);
 		lp.set_rhs(rhs);
@@ -623,12 +617,6 @@ void Simplex::set_last_column_table_for_print(const Simplex::PrintTable &table,
 }
 
 void Simplex::print_ans() {
-	for(const auto &index: cj) {
-		if(index >= number_of_x + number_of_s) {
-			cout << ColoredString::blue("this LP is not possible answer!");
-			return;
-		}
-	}
 	for(const auto &num: c_bar) {
 		if(lp.get_type_of_optimization() == LP::TypeOfOptimization::max && num > 0) {
 			cout << ColoredString::blue("the answer of LP is positive infinite!");
@@ -638,6 +626,14 @@ void Simplex::print_ans() {
 			return;
 		}
 	}
+
+	for(const auto &index: cj) {
+		if(index >= number_of_x + number_of_s) {
+			cout << ColoredString::blue("this LP is not possible answer!");
+			return;
+		}
+	}
+
 	size_t number_of_zero = 0;
 	for(size_t i = 0; i < number_of_x + number_of_s; i++) {
 		if(c_bar[i] == 0)
