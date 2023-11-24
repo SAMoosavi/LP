@@ -1,6 +1,6 @@
 #include "Dual.h"
 
-Dual::Dual(LP lp)
+Dual::Dual(const LP& lp)
 : primal_lp(lp)
 {
 	dual_lp = LP(lp.get_number_of_line(), lp.get_number_of_x(), calculate_type_of_optimization_dual(), lp.get_rhs(),

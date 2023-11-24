@@ -6,7 +6,7 @@
 class Dual
 {
 public:
-	Dual(LP lp);
+	explicit Dual(const LP& lp);
 
 	LP get_dual_lp() const noexcept;
 	LP get_primal_lp() const noexcept;
