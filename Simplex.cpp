@@ -53,6 +53,24 @@ Simplex::Simplex(const LP &last_lp)
 			for(int i = 0; i < number_of_r; ++i, ++rb_last_z)
 				*rb_last_z = 0;
 
+			for(size_t i = 0; i < table.size(); ++i) {
+
+				LP::Coefficient a = LP::Coefficient(1) / table[i][cj[i]];
+				auto &new_base_row = table[i];
+				for(size_t row_index = 0; row_index < table.size(); ++row_index) {
+					auto &t = table[row_index];
+					if(t == new_base_row)
+						continue;
+
+					a = t[cj[i]] / new_base_row[cj[i]];
+					if(a != 0) {
+						for(int j = 0; j < t.size(); ++j)
+							t[j] -= a * new_base_row[j];
+
+						rhs[row_index] -= a * rhs[i];
+					}
+				}
+			}
 			lp.set_number_of_x(number_of_x + number_of_s + number_of_r);
 			lp.set_number_of_line(lp.get_number_of_line() + 1);
 			lp.set_z(last_z);
