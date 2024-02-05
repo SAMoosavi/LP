@@ -195,9 +195,14 @@ inline MNumber<BaseNumber>::operator std::string() const noexcept
 {
 	std::string s;
 
-	if(inf != 0)
+	if(inf != 0) {
+		if(inf == 1)
+			s += "M";
+		else if(inf == -1)
+			s+= "-M";
+		else
 		s += to_string(inf) + "M";
-
+	}
 	if(num != 0) {
 		if(num > 0 && inf != 0)
 			s += "+";
